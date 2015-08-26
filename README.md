@@ -105,7 +105,7 @@ Arguments should also be descriptive. Remember that you can use argument labels,
 **Preferred**
 
 ```swift
-func convert(#point: Point, toView view: View) -> Point
+func convert(point point: Point, toView view: View) -> Point
 ```
 **Not Preferred**
 
@@ -120,7 +120,7 @@ Follow the standard Apple convention of referring to the first parameter in the 
 
 ```swift
 class Guideline {
-  func combineWithString(incoming: String, options: Dictionary?) { ... }
+  func combineWithString(incoming: String, options: Dictionary? = nil) { ... }
   func upvoteBy(amount: Int) { ... }
 }
 ```
@@ -128,7 +128,7 @@ class Guideline {
 Keep short function declarations on one line including the opening brace:
 
 ```swift
-var isSomeStuff:Bool = true
+var isSomeStuff: Bool = true
 
 func reticulateSplines(spline: [Double]) -> Bool {
     // reticulate code goes here
