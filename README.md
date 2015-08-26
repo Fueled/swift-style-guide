@@ -16,6 +16,9 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 
 * [Xcode Preferences](#xcode-preferences)
 * [Spacing](#spacing)
+* [Naming](#naming)
+  * [Prose](#prose)
+  * [Class Prefixes](#class-prefixes)
 * [Comments](#comments)
 * [Code organization](#code-organization)
 * [Value types over reference types](#value-types-over-reference-types)
@@ -30,6 +33,96 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 Indent code with tabs (above modification will automatically implement spaces). End files with an empty line.
 
 Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing.
+
+## Naming
+
+Use descriptive names with camel case for classes, methods, variables, etc. Class names should be capitalized, while method names and variables should start with a lower case letter.
+
+**Preferred:**
+
+```swift
+private let maximumWidgetCount = 100
+
+class WidgetContainer {
+  var widgetButton: UIButton
+  let widgetHeightPercentage = 0.85
+}
+```
+
+**Not Preferred:**
+
+```swift
+let MAX_WIDGET_COUNT = 100
+
+class app_widgetContainer {
+  var wBut: UIButton
+  let wHeightPct = 0.85
+}
+```
+
+For functions and init methods, prefer named parameters for all arguments unless the context is very clear. Include external parameter names if it makes function calls more readable.
+
+```swift
+func dateFromString(dateString: String) -> NSDate
+func convertPointAt(#column: Int, #row: Int) -> CGPoint
+func timedAction(#delay: NSTimeInterval, perform action: SKAction) -> SKAction!
+
+// would be called like this:
+dateFromString("2014-03-14")
+convertPointAt(column: 42, row: 13)
+timedAction(delay: 1.0, perform: someOtherAction)
+```
+
+For methods, follow the standard Apple convention of referring to the first parameter in the method name:
+
+```swift
+class Guideline {
+  func combineWithString(incoming: String, options: Dictionary?) { ... }
+  func upvoteBy(amount: Int) { ... }
+}
+```
+
+### Enumerations
+
+Use UpperCamelCase for enumeration values:
+
+```swift
+enum Shape {
+  case Rectangle
+  case Square
+  case Triangle
+  case Circle
+}
+```
+
+### Prose
+
+When referring to functions in prose (tutorials, books, comments) include the required parameter names from the caller's perspective or `_` for unnamed parameters.
+
+> Call `convertPointAt(column:row:)` from your own `init` implementation.
+>
+> If you call `dateFromString(_:)` make sure that you provide a string with the format "yyyy-MM-dd".
+>
+> If you call `timedAction(delay:perform:)` from `viewDidLoad()` remember to provide an adjusted delay value and an action to perform.
+>
+> You shouldn't call the data source method `tableView(_:cellForRowAtIndexPath:)` directly.
+
+When in doubt, look at how Xcode lists the method in the jump bar – our style here matches that.
+
+![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
+
+### Class Prefixes
+
+Swift types are automatically namespaced by the module that contains them and you should not add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
+
+```swift
+import SomeModule
+
+let myClass = MyModule.UsefulClass()
+```
+
+
+
 
 ## Comments
 
