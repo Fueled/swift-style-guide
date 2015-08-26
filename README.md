@@ -273,8 +273,8 @@ extension Wallet: Printable {
     *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
     *   `Base.lproj/` (if using localized strings)
     *   `Shared/`
-        *   `Views/` (contains `.xib`s and UI subclasses used throughout the app)
-        *   `Controllers/` (contains view controllers used or subclassed throughout the app)
+        *   `Views/` (contains base `.xib`s and UI subclasses used throughout the app)
+        *   `Controllers/` (contains base view controllers used or subclassed throughout the app)
         *   `Utilities/` (contains utility classes and singletons)
     *   `Resources/`
         *   `Fonts/`
