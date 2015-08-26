@@ -130,7 +130,7 @@ Keep short function declarations on one line including the opening brace:
 ```swift
 var isSomeStuff: Bool = true
 
-func reticulateSplines(spline: [Double]) -> Bool {
+func reticulate(splines splines: [Double]) -> Bool {
     // reticulate code goes here
     return isSomeStuff
 }
@@ -140,7 +140,7 @@ For functions with long signatures, add line breaks at appropriate points
 and add an extra indent on subsequent lines:
 
 ```swift
-func reticulateSplines(spline: [Double], adjustmentFactor: Double,
+func reticulate(splines splines: [Double], adjustmentFactor: Double,
     translateConstant: Int, comment: String) -> Bool {
         // reticulate code goes here
            return isSomeStuff
@@ -184,7 +184,7 @@ Swift types are automatically namespaced by the module that contains them and yo
 ```swift
 import SomeModule
 
-let myClass = MyModule.UsefulClass()
+let myClass = SomeModule.UsefulClass()
 ```
 
 It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
@@ -344,4 +344,4 @@ Types should never have prefixes because their names are already implicitly mang
 
 Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
 
-Rewriting standard library functionalities should never take place. Your code will most probably be less optimized and more confusing to other developers.
+Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
