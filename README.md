@@ -21,6 +21,8 @@ This guide is intended to outline the set of shared practices Fueled will apply 
   * [Class Prefixes](#class-prefixes)
 * [Comments](#comments)
 * [Code organization](#code-organization)
+  * [File](#file-code-organization)
+  * [Project](#project-code-organization)
 * [Value types over reference types](#value-types-over-reference-types)
 * [Forbidden](#forbidden)
 
@@ -34,7 +36,10 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 
 Indent code with tabs (above modification will automatically implement spaces). End files with an empty line.
 
-Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing.
+Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
+*Make liberal use of vertical whitespace to divide code into logical chunks.
+*Don’t leave trailing whitespace.
+*Not even leading indentation on blank lines.
 
   ![Xcode indent settings](screens/indentation.png)
 
@@ -159,6 +164,7 @@ If you decide to add comments, keep them up-to-date. Unmaintained comments shoul
 
 ## Code organization
 
+### File Code Organization
 Source files should have the following organization.
 
 ```swift
@@ -207,6 +213,40 @@ extension Wallet: Printable {
 
 }
 ```
+
+### Project Code Organization
+
+*   The filesystem directories should be kept in sync with the Xcode file groups.
+
+*   Files within groups may be kept alphabetized (case-insensitively, with groups before files).
+
+*   An Xcode project repository should follow this structure:
+    *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
+        *   `Pods/` (if using CocoaPods)
+        *   `ProjectName/`
+        *   `ProjectNameTests/`
+        *   `ProjectName.xcodeproj/`
+        *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
+
+*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure:
+    *   `Models/`
+        *   `Editable/` (Core-data Entity Categories)
+        *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
+        *   `ProjectName.xcdatamodeld`
+    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
+    *   `Storyboards/` (contains `.storyboards`s)
+    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
+    *   `Base.lproj/` (if using localized strings)
+    *   `Shared/`
+        *   `Views/` (contains `.xib`s and UI subclasses used throughout the app)
+        *   `Controllers/` (contains view controllers used or subclassed throughout the app)
+        *   `Utilities/` (contains utility classes and singletons)
+    *   `Resources/`
+        *   `Fonts/`
+        *   `Images/` (contains some sort of internal folder structure and uses sane naming conventions and contains Images.xcassets)
+        *   `Strings/` (contains plists for localized strings)
+    *   `Supporting Files/` (AppDelegate, InfoPlist, ProjectName-Info.plist, ProjectName-Prefix.pch, bridging-headers)
+
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
 
