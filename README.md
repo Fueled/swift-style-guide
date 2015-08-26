@@ -17,6 +17,8 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 * [Xcode Preferences](#xcode-preferences)
 * [Spacing](#spacing)
 * [Naming](#naming)
+  * [Functions and Arguments](#functions-and-arguments)
+  * [Enumerations](#enumerations)
   * [Prose](#prose)
   * [Class Prefixes](#class-prefixes)
 * [Comments](#comments)
@@ -92,20 +94,29 @@ class app_widgetContainer {
 }
 ```
 
+
+### Functions and Arguments
+
 For functions and init methods, prefer named parameters for all arguments unless the context is very clear. Include external parameter names if it makes function calls more readable.
 
-```swift
-func dateFromString(dateString: String) -> NSDate
-func convertPointAt(#column: Int, #row: Int) -> CGPoint
-func timedAction(#delay: NSTimeInterval, perform action: SKAction) -> SKAction!
+Function names should be as descriptive and meaningful as possible. Try to express its intent in the name, by keeping it compact at the same time.
+Arguments should also be descriptive. Remember that you can use argument labels, which may be more meaningful to a user.
 
-// would be called like this:
-dateFromString("2014-03-14")
-convertPointAt(column: 42, row: 13)
-timedAction(delay: 1.0, perform: someOtherAction)
+**Preferred**
+
+```swift
+func convert(#point: Point, toView view: View) -> Point
+```
+**Not Preferred**
+
+```swift
+func convertPoint(point: Point, fromView view: View) -> Point
 ```
 
-For methods, follow the standard Apple convention of referring to the first parameter in the method name:
+Use default values for arguments where a function expects any value or some specific value most of the time. If a particular argument is not required for a function, it's good to make it optional and `nil` by default.
+
+Follow the standard Apple convention of referring to the first parameter in the method name in cases where there is just a single argument or when adding parameters to methods only increases verbosity
+
 
 ```swift
 class Guideline {
@@ -113,6 +124,29 @@ class Guideline {
   func upvoteBy(amount: Int) { ... }
 }
 ```
+
+Keep short function declarations on one line including the opening brace:
+
+```swift
+var isSomeStuff:Bool = true
+
+func reticulateSplines(spline: [Double]) -> Bool {
+    // reticulate code goes here
+    return isSomeStuff
+}
+```
+
+For functions with long signatures, add line breaks at appropriate points 
+and add an extra indent on subsequent lines:
+
+```swift
+func reticulateSplines(spline: [Double], adjustmentFactor: Double,
+    translateConstant: Int, comment: String) -> Bool {
+        // reticulate code goes here
+           return isSomeStuff
+}
+```
+
 
 ### Enumerations
 
@@ -153,7 +187,8 @@ import SomeModule
 let myClass = MyModule.UsefulClass()
 ```
 
-
+It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
+On the other hand developer discretion is best.
 
 
 ## Comments
