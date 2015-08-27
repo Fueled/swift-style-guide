@@ -661,16 +661,12 @@ Also, associate colon with type identifier.
 
 ```swift
 // preferred
-
 class VideoArticle: Article
-let events: [Timestamp: Event]
 ```
 
 ```swift
 // not preferred
-
 class VideoArticle : Article
-let events : [Timestamp : Event]
 ```
 
 Typealiases should be short and meaningful.
