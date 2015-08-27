@@ -12,6 +12,25 @@ This guide is based on the following sources:
 
 This guide is intended to outline the set of shared practices Fueled will apply to current and future Swift Projects in order to implement a uniform Swift code style, readability, consistency and simplicity.
 
+This is an attempt to encourage patterns that accomplish the following goals (in
+rough priority order):
+
+ 1. Increased rigor, and decreased likelihood of programmer error
+ 1. Increased clarity of intent
+ 1. Reduced verbosity
+ 1. Fewer debates about aesthetics
+
+### Contribution
+
+If you want to suggest a change or addition that will help accomplish
+the [Purpose](#purpose-of-the-style-guide) of this style guide, please open a pull request that:
+
+ 1. Explains the guideline
+ 1. Demonstrates the guideline with more-or-less valid example code
+ 1. Justifies the guideline by explaining the rationale behind it
+
+Just note that all suggestions are open to discussion and debate! :smile:
+
 ## Table of contents
 
 * [Xcode Preferences](#xcode-preferences)
@@ -21,6 +40,7 @@ This guide is intended to outline the set of shared practices Fueled will apply 
   * [Enumerations](#enumerations)
   * [Prose](#prose)
   * [Class Prefixes](#class-prefixes)
+* [Access Control](#access-control)
 * [Swift Specific Guides](#swift-specific-guides)
   * [Switch](#switch)
   * [Properties](#properties)
@@ -215,6 +235,29 @@ let myClass = SomeModule.UsefulClass()
 
 It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
 On the other hand developer discretion is best.
+
+
+## Access Control
+
+Always specify access control explicitly for top-level definitions
+-Top-level functions, types, and variables should always have explicit access control specifiers:
+
+```swift
+public var whoopsGlobalState: Int
+internal struct TheFez {}
+private func doTheThings(things: [Thing]) {}
+```
+
+However, definitions within those can leave access control implicit, where appropriate:
+
+```swift
+internal struct TheFez {
+  var owner: Person = Joshaber()
+}
+```
+
+_Rationale:_ It's rarely appropriate for top-level definitions to be specifically `internal`, and being explicit ensures that careful thought goes into that decision. Within a definition, reusing the same access control specifier is just duplicative, and the default is usually reasonable.
+
 
 ## Swift Specific Guides 
 
@@ -731,6 +774,57 @@ struct Person {
     
 }
 ```
+
+### Make classes `final` by default
+
+Classes should start as `final`, and only be changed to allow subclassing if a valid need for inheritance has been identified. Even in that case, as many definitions as possible _within_ the class should be `final` as well, following the same rules.
+
+_Rationale:_ Composition is usually preferable to inheritance, and opting _in_ to inheritance hopefully means that more thought will be put into the decision.
+
+
+### Omit type parameters where possible
+
+Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
+
+```swift
+struct Composite<T> {
+  …
+  func compose(other: Composite<T>) -> Composite<T> {
+    return Composite<T>(self, other)
+  }
+}
+```
+
+could be rendered as:
+
+```swift
+struct Composite<T> {
+  …
+  func compose(other: Composite) -> Composite {
+    return Composite(self, other)
+  }
+}
+```
+
+_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
+
+### Use whitespace around operator definitions
+
+Use whitespace around operators when defining them. Instead of:
+
+```swift
+func <|(lhs: Int, rhs: Int) -> Int
+func <|<<A>(lhs: A, rhs: A) -> A
+```
+
+write:
+
+```swift
+func <| (lhs: Int, rhs: Int) -> Int
+func <|< <A>(lhs: A, rhs: A) -> A
+```
+
+_Rationale:_ Operators consist of punctuation characters, which can make them difficult to read when immediately followed by the punctuation for a type or value parameter list. Adding whitespace separates the two more clearly.
 
 ## Code organization
 
