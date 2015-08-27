@@ -41,9 +41,10 @@ Just note that all suggestions are open to discussion and debate! :smile:
 		* [Enumerations](#enumerations)
 	* [Access Control](#access-control)
 	* [Switch](#switch)
+	* [Control Flow](#control-flow)
 	* [Properties](#properties)
+		* [Identifiers](#identifiers)
 	* [Closures](#closures)
-	* [Identifiers](#identifiers)
 	* [Singleton](#singleton)
 	* [Strings](#strings)
 	* [Enums](#enums)
@@ -149,12 +150,12 @@ For functions and init methods, prefer named parameters for all arguments unless
 Function names should be as descriptive and meaningful as possible. Try to express its intent in the name, by keeping it compact at the same time.
 Arguments should also be descriptive. Remember that you can use argument labels, which may be more meaningful to a user.
 
-**Preferred**
+**Preferred:**
 
 ```swift
 func convert(point point: Point, toView view: View) -> Point
 ```
-**Not Preferred**
+**Not Preferred:**
 
 ```swift
 func convertPoint(point: Point, fromView view: View) -> Point
@@ -224,8 +225,7 @@ When referring to functions in prose (tutorials, books, comments) include the re
 
 When in doubt, look at how Xcode lists the method in the jump bar – our style here matches that.
 
-<!--![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
--->
+![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
 
 -
 
@@ -256,10 +256,14 @@ private func doTheThings(things: [Thing]) {}
 ```
 
 However, definitions within those can leave access control implicit, where appropriate:
+> Don't add modifiers (like `internal`) except on top level, if they're already the default. Similarly, don't repeat the access modifier when overriding a method.
 
 ```swift
 internal struct TheFez {
   var owner: Person = Joshaber()
+  override func kickTheFez() {
+	  //
+  }
 }
 ```
 
@@ -315,6 +319,37 @@ case "World"
     print("It doesn't")
 default:
     assert(false, "Useful message for developer")
+}
+```
+
+-
+
+### Control Flow
+
+- Prefer the `for-in` style of `for` loop over the `for-condition-increment` style.
+
+**Preferred:**
+
+```swift
+for _ in 0..<3 {
+  println("Hello three times")
+}
+
+for (index, person) in enumerate(attendeeList) {
+  println("\(person) is at position #\(index)")
+}
+```
+
+**Not Preferred:**
+
+```swift
+for var i = 0; i < 3; i++ {
+  println("Hello three times")
+}
+
+for var i = 0; i < attendeeList.count; i++ {
+  let person = attendeeList[i]
+  println("\(person) is at position #\(i)")
 }
 ```
 
@@ -398,7 +433,90 @@ var computedProp: String {
 }
 ```
 
+- It is acceptable to define multiple variables and structures on a single line if they share a common purpose / context.
+
+```swift
+class Circle {
+  var x:Int = 0, y:Int = 0
+}
+```
+
 -
+
+- Prefer the shortcut versions of type declarations over the full generics syntax.
+
+**Preferred:**
+
+```swift
+var deviceModels: [String]
+var employees: [Int: String]
+var faxNumber: Int?
+```
+
+**Not Preferred:**
+
+```swift
+var deviceModels: Array<String>
+var employees: Dictionary<Int, String>
+var faxNumber: Optional<Int>
+```
+
+- If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
+
+```swift
+static var testVar: String
+```
+
+- When declaring dictionary types, include a space before the key type and after the colon:
+
+```swift
+var someDictionary: [String : Int]
+```
+
+- When declaring a constant, use camel case with the first letter uppercase.
+
+```swift
+class TestClass {
+    let ConstantValue = 3
+}
+```
+	
+#### Identifiers
+	
+- To declare a set of constants not to be used for switching, use a struct:
+
+```swift
+struct Constants {
+    static let A = "A"
+    static let B = "B"
+}
+```
+	
+- Only use self.<parameter name> or self.<methodName()> if you need to, which is when you have a parameter of the same name as the instance variable, or in closures:
+
+```swift
+class Test {
+
+    var a: (() -> Void)?
+    var b: Int = 3
+
+    func foo(a: () -> Void) {
+        self.a = a
+    }
+
+    func foo1() {
+        foo() {
+            println(self.b)
+        }
+    }
+    
+    func foo3() {
+	 	foo1()
+	 	foo1()
+	 	foo1()
+    }
+}
+```
 
 ### Closures
 
@@ -495,82 +613,29 @@ let positive = filter(numbers, isPositive)
 
 -
 
-### Identifiers
-
-- Only use self.<parameter name> if you need to, which is when you have a parameter of the same name as the instance variable, or in closures:
-	
-	```swift
-	class Test {
-	
-	    var a: (() -> Void)?
-	    var b: Int = 3
-	
-	    func foo(a: () -> Void) {
-	        self.a = a
-	    }
-	
-	    func foo1() {
-	        foo() {
-	            println(self.b)
-	        }
-	    }
-	}
-	```
-
-- If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
-
-	```swift
-	static var testVar: String
-	```
-
-- When declaring dictionary types, include a space before the key type and after the colon:
-
-	```swift
-	var someDictionary: [String : Int]
-	```
-
-- When declaring a constant, use camel case with the first letter uppercase.
-
-	```swift
-	class TestClass {
-	    let ConstantValue = 3
-	}
-	```
-	
-- To declare a set of constants not to be used for switching, use a struct:
-	
-	```swift
-	struct Constants {
-	    static let A = "A"
-	    static let B = "B"
-	}
-	```
-
--
-
 ### Singleton
 - Implement a singleton by having this at the top of your class definition and a private initializer:
 
-	```swift
-	class ClassA {
-	
-	  static let sharedInstance: ClassA = ClassA()
-	  
-	  private init() {
-	    // ...
-	  }
-	}
-	```
+```swift
+class ClassA {
+
+  static let sharedInstance: ClassA = ClassA()
+  
+  private init() {
+    // ...
+  }
+}
+```
 
 -
 
 ### Strings
 - When appending to a string, always use the += operator.
 	
-	```swift
-	var newString = "Hello"
-	newString += " world!"
-	```
+```swift
+var newString = "Hello"
+newString += " world!"
+```
 
 *Note: do not concatenate user-facing strings as the ordering could change in different languages.*
 
@@ -656,47 +721,49 @@ Try to use native Swift types before you come up with your own. Every type can b
 - Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
 
 
-	**Preferred:**
+**Preferred:**
+
+```swift
+let name = "John Appleseed"
+let planets = [.Mars, .Saturn]
+let colors = ["red": 0xff0000, "green": 0x00ff00]
+```
 	
-	```swift
-	let name = "John Appleseed"
-	let planets = [.Mars, .Saturn]
-	let colors = ["red": 0xff0000, "green": 0x00ff00]
-	```
-	
-	
-	**Not Preferred:**
-	
-	```swift
-	let name: String = "Amanda Smith"
-	let planets: [Planet] = [.Venus, .Earth]
-	let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
-	```
+
+**Not Preferred:**
+
+```swift
+let name: String = "Amanda Smith"
+let planets: [Planet] = [.Venus, .Earth]
+let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
+```
 
 - Omit type parameters where possible
 
 	Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
 	
-	```swift
-	struct Composite<T> {
-	  …
-	  func compose(other: Composite<T>) -> Composite<T> {
-	    return Composite<T>(self, other)
-	  }
-	}
-	```
+	**Not Preferred:**
 	
-	could be rendered as:
+```swift
+struct Composite<T> {
+  …
+  func compose(other: Composite<T>) -> Composite<T> {
+    return Composite<T>(self, other)
+  }
+}
+```
+
+	**Preferred:**
 	
-	```swift
-	struct Composite<T> {
-	  …
-	  func compose(other: Composite) -> Composite {
-	    return Composite(self, other)
-	  }
-	}
-	```
-	
+```swift
+struct Composite<T> {
+  …
+  func compose(other: Composite) -> Composite {
+    return Composite(self, other)
+  }
+}
+```
+
 	_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
 
 -
@@ -966,7 +1033,7 @@ struct Country {
 On the other hand, reference types, such as classes, are passed by referencing the same mutable instance in memory. There are several cases when classes should be preferred. The first case emerges when subclassing current Objective-C classes. The second one is when you need to use reference types with mutable state, or if you need to perform some actions on deinitialization.
 
 Reference types are great to represent **behavior** in the app.
-
+	
 ```swift
 class FileStream {
     let file: File
@@ -976,7 +1043,7 @@ class FileStream {
 
 Keep in mind that inheritance is not a sufficient argument to use classes. You should try to compose your types using protocols.
 
-**Preferred**
+**Preferred:**
 
 ```swift
 protocol Polygon {
@@ -988,8 +1055,8 @@ struct Triangle: Polygon {
 }
 ```
 
-**Not Preferred**
-
+**Not Preferred:**
+	
 ```swift
 class Polygon {
     let numberOfSides: Int
@@ -1007,23 +1074,26 @@ class Triangle: Polygon {
 
 ### Protocols
 
-The ReusableView Protocol should be used by any view used by a UICollectionView or UITableView that needs a reuse identifier. You will see how this is used in the UITableView section.
+The ReusableView Protocol should be used by any view used by a UICollectionViewCell or UITableViewCell that needs a reuse identifier.
 
 ```swift
-protocol ReusableView {
+protocol ReusableCell {
     static var ReuseIdentifier: String { get }
     static var NibName: String { get }
 }
 ```
-#### UITableView & UICollectionView
-In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. Use camel case with first letter uppercase, because it is a constant. **Note**: Please use the protocol listed in the conformance.
+
+#### UITableViewCell & UICollectionViewCell
+
+In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. Use camel case with first letter uppercase, because it is a constant. **Note**: Please use the protocol listed above for conformance.
 
 ```swift
-class TableViewCell: UITableViewCell, ReusableView {
+extension TableViewCell: ReusableCell {
     static let ReuseIdentifier: String = "TableViewCellIdentifier"
     static let NibName: String = "CustomTableViewCell"
 }
 ```
+
 > **Reasoning**: When registering cells for reuse in a UITableView or UICollectionView, you need the nib name to load the nib and the reuse identifier.
 
 -
@@ -1050,10 +1120,11 @@ private lazy var handleNotificationABC: (NSNotification!) -> Void { [weak self] 
     // Handle the notification
 }
 ```
+	
 > **Reasoning**: This way you can define capture semantics for self and also use the identifier as the selector in the addObserver method (see below) instead of a string. This gives you the safety of the compiler.
-
+	
 Create a registerNotifications() method and deregisterNotifications().
-
+	
 ```swift
 func registerNotifications() {
     let notificationCenter = NSNotificationCenter.defaultCenter()
