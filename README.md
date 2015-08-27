@@ -27,10 +27,16 @@ This guide is intended to outline the set of shared practices Fueled will apply 
   * [Closures](#closures)
   * [Identifiers](#identifiers)
   * [Singleton](#singleton)
-  * [Optionals](#optionals)
   * [Strings](#strings)
   * [Enums](#enums)
   * [Documentation](#documentation)
+* [Other](#other)
+  * [Closures](#closures)
+  * [Types](#types)
+  * [Mutability – `let` over `var`](#mutability--let-over-var)
+  * [Optionals](#optionals)
+  * [Static vs dynamic code](#static-vs-dynamic-code)
+  * [Implicit getters](#implicit-getters)
 * [Code organization](#code-organization)
   * [File](#file-code-organization)
   * [Project](#project-code-organization)
@@ -411,6 +417,22 @@ func doEverything() {
 }
 ```
 
+Use implicit `return` in one-line closures with clear context.
+
+```swift
+let numbers = [1, 2, 3, 4, 5]
+let even = filter(numbers) { $0 % 2 == 0 }
+```
+
+Also, remember that global functions are closures and sometimes it's convenient to pass a function name as a closure.
+
+```swift
+func isPositive(number: Int) -> Bool
+
+let numbers = [-1, 2, 3, -4, 5]
+let positive = filter(numbers, isPositive)
+```
+
 ### Identifiers
 - Only use self.<parameter name> if you need to, which is when you have a parameter of the same name as the instance variable, or in closures:
 
@@ -472,25 +494,6 @@ class ClassA {
   private init() {
     // ...
   }
-}
-```
-
-### Optionals
-- When unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. 
-
-```swift
-func possibleBike() -> Bike? {
-    // content
-}
-
-let bike = possibleBike()
-if let bike = bike {
-    // content
-}
-
-//OR 
-if let bike = possibleBike() {
-  
 }
 ```
 
@@ -569,6 +572,160 @@ This method has parameters and a return type.
 */
 func foo3(input: String) -> Bool {
     // content
+}
+```
+
+
+## Other
+
+### Types
+
+Try to use native Swift types before you come up with your own. Every type can be extended, so sometimes instead of introducing new types, it's convenient to extend or alias existing ones.
+
+Remember that Objective-C classes that have native Swift equivalents are not automatically bridged, e.g. `NSString` is not implicitly bridged to `String` in the following example.
+
+```swift
+func lowercase(string String) -> String
+
+let string: NSString = /* ... */
+
+lowercase(string) // compile error
+lowercase(string as String) // no error
+```
+
+Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
+
+```swift
+// preferred
+
+let name = "John Appleseed"
+let planets = [.Mars, .Saturn]
+let colors = ["red": 0xff0000, "green": 0x00ff00]
+```
+
+```swift
+// not preferred
+
+let name: String = "Amanda Smith"
+let planets: [Planet] = [.Venus, .Earth]
+let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
+```
+
+Also, associate colon with type identifier.
+
+```swift
+// preferred
+
+class VideoArticle: Article
+let events: [Timestamp: Event]
+```
+
+```swift
+// not preferred
+
+class VideoArticle : Article
+let events : [Timestamp : Event]
+```
+
+Typealiases should be short and meaningful.
+
+```swift
+// preferred
+
+typealias MoneyAmount = Double
+```
+
+```swift
+// not preferred
+
+typealias Money = Double
+```
+
+### Mutability – `let` over `var`
+
+It's safer to assume that a variable is immutable, thus it's highly recommended to declare values as constants, using `let`. Immutable constants ensure their values will never change, which results in less error-prone code.
+
+Mutable `var` variables should only be used when necessary, e.g. when you're absolutely sure you will be changing their values in the future.
+
+### Optionals
+
+-Force unwrapping should be avoided as much as possible. Implicitly unwrapped optionals lead to less safe code and can cause unwanted crashes. Use optional chaining or `if-let` bindings to unwrap optional values.
+- When using if-let bindings for unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. 
+
+```swift
+func possibleBike() -> Bike? {
+    // content
+}
+
+let bike = possibleBike()
+if let bike = bike {
+    // content
+}
+
+//OR 
+if let bike = possibleBike() {
+  
+}
+```
+
+```swift
+let user: User? = findUserById(123)
+
+if let user = user {
+    println("found user \(user.name) with id \(user.id)")
+}
+```
+
+Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement.
+
+```swift
+let name: String?
+let age: Int?
+
+if let name = name, age = age where age >= 13 {
+    /* ... */
+}
+```
+
+However, implicitly unwrapped optionals can sometimes be useful. They may be used in unit tests, where system under test should never be `nil`. There's no point executing rest of the tests if one of them fails.
+
+```swift
+var sut: SystemUnderTest!
+
+beforeEach {
+    sut = /* ... */
+}
+
+afterEach {
+    sut = nil
+}
+
+it("should behave as expected") {
+    sut.run()
+    expect(sut.running).to(beTrue())
+}
+```
+
+### Static vs. dynamic code
+
+Static code is code where logic and control can be resolved at compile-time. The Swift compiler is able to optimize predictable code to work better and faster. Try to make use of this feature and write as much static code as possible.
+
+On the other hand, dynamic code's control flow is resolved at run-time, which means it's not predictable and, as a result, can't be optimized by the compiler. Avoid using `dynamic` and `@objc` attributes.
+
+### Implicit getters
+
+Read-only computed properties don't need an explicit getter, thus it can be ommited. This also applies to read-only subscripts.
+
+```swift
+struct Person {
+
+    let height: Float
+    let weight: Float
+
+    var bmi: Float {
+        return weight / (height * height)
+    }
+    
 }
 ```
 
