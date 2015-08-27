@@ -37,7 +37,14 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 * [Value types over reference types](#value-types-over-reference-types)
 * [Forbidden](#forbidden)
 * [Cocoa Guide](#cocoa-guide)
-
+  * [Protocols](#protocols)
+    * [UITableView/UICollectionView](#uitableview)
+  * [NSNotification](#nsnotification)
+  * [View Controllers](#view-controllers)
+  * [UIView](#uiview)
+  * [Core Foundation](#core-foundation)
+  * [User Facing Strings](#user-facing-strings)
+  * [Objective-C Interoperability](#objective-c-interoperability)
 
 ## Xcode Preferences
 - Use spaces for tabs and 2 spaces per tab (Change the default in Xcode->Preferences->Text Editing->Indentation)
@@ -316,6 +323,17 @@ class Test {
     static let ConstantValue: String = "TestString"
 }
 ```
+
+- Prefer creating Computed Properties for any methods which return something and take no parameters.
+
+var computedProp: String {
+  if someBool {
+    return "Hello"
+  } else {
+    return "No"
+  }
+}
+
 
 ### Closures
 - Do not use parameter types when declaring parameter names to use in a closure. Also, keep parameter names on same line as opening brace for closures:
@@ -602,29 +620,7 @@ class Stuff {
 
 - When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. 1 extension per protocol:
 
-```swift
-// NewProtocol.swift //
-protocol NewProtocol {
-    func reqMethod()
-}
-
-// Test.swift //
-class Test {
-
-    // content
-}
-
-// MARK: - Protocols
-// MARK: NewProtocol
-
-extension Test: NewProtocol {
-    func reqMethod() {
-        // content
-    }
-}
-```
-
-Source files should have the following organization.
+Thus Source files will have the following organization.
 
 ```swift
 // 1. imports
@@ -633,41 +629,69 @@ import MoneyKit
 
 // 2. classes, structs, enums
 
+/**
+//Mark: - Printabilty
+*/
+protocol Printabilty {
+  var description:String { get }
+  func reqMethod()
+}
+
+/**
+//MARK: - Wallet
+*/
+
 class Wallet {
 
+    // MARK: - Properties
+
     // 2.1. public, internal properties
+    // MARK: Public Properties
 
     let cards: [Card]
     private(set) var cash: Cash
     
     // 2.2. private properties
+    // MARK: Private Properties
     
     unowned private let owner: Person
     
+    // MARK: - Methods
+
     // 2.3. initializers
-    
+    // MARK: Initializer Methods
+
     init(cash: Cash, cards: [Card], owner: Person)
     
     // 2.4. public
+    // MARK: Public Methods
     
-    func affordsTransaction(transaction: Transaction) -> Bool
+    public func affordsTransaction(transaction: Transaction) -> Bool
     
     // 2.5 internal functions
+    // MARK: InternalMethods Methods
 
     func calculateTransactionWithCard(card: Card) -> Transaction
     
     // 2.6. private functions
-    
+    // MARK: Private Methods
+
     private func cardWithSuffiecientCash(cash: Cash) -> Card?
     
 }
 
 // 3. extensions, protocol implementations
+// MARK: - Protocol Implementation
+// MARK: Printable
 
-extension Wallet: Printable {
+extension Wallet: Printabilty {
 
     var description: String {
         return "\(owner.name) has \(cash) cash and \(cards.count) cards"
+    }
+
+    func reqMethod() {
+      //something
     }
 
 }
@@ -772,7 +796,7 @@ Rewriting standard library functionalities should never take place (for e.g: Met
 
 ## Cocoa Guides
 
-#### Protocols
+### Protocols
 
 The ReusableView Protocol should be used by any view used by a UICollectionView or UITableView that needs a reuse identifier. You will see how this is used in the UITableView section.
 
@@ -782,7 +806,7 @@ protocol ReusableView {
     static var NibName: String { get }
 }
 ```
-##### UITableView & UICollectionView
+#### UITableView & UICollectionView
 In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. Use camel case with first letter uppercase, because it is a constant. **Note**: Please use the protocol listed in the conformance.
 
 ```swift
@@ -793,7 +817,7 @@ class TableViewCell: UITableViewCell, ReusableView {
 ```
 > **Reasoning**: When registering cells for reuse in a UITableView or UICollectionView, you need the nib name to load the nib and the reuse identifier.
 
-#### NSNotification
+### NSNotification
 Name notifications in reverse domain format with the notification name in Capitalized Camel Case.
 
 ```swift
@@ -831,7 +855,7 @@ func deregisterNotifications() {
 }
 ```
 
-#### View Controllers
+### View Controllers
 If the view controller is associated with a Storyboard, create a class method named createInstance to return an initialized instance of the view controller from the Storyboard.
 
 ```swift
@@ -851,7 +875,7 @@ static func createInstanceWithId(id: Int) -> MasterViewController {
 }
 ```
 
-#### UIView
+### UIView
 If you have a class that inherits from UIView and has a XIB file where it is layed out, create a class method named createInstance similar to the example in the View Controllers section.
 
 ```swift
@@ -865,7 +889,7 @@ class CustomView: UIView {
 }
 ```
 
-#### Core Foundation
+### Core Foundation
 When using Core Graphics structs, such as CGRect, use the initializers instead of the older CGRectMake method.
 
 ```swift
@@ -877,7 +901,8 @@ If you need to make an instance of a struct zeroed out, utilize the class consta
 ```swift
 var zeroRect = CGRect.zeroRect
 ```
-#### Strings
+
+### User Facing Strings
 Put any user-facing string in the Localizable.strings file with a key in upper camel case. Use NSLocalizedString when accessing the strings in code.
 
 ```swift
@@ -890,7 +915,7 @@ var userFacing = NSLocalizedString("UserFacingStringKey", comment: "")
 
 ```
 
-#### Objective-C Interoperability
+### Objective-C Interoperability
 You must have a single Objective-C bridging header for Object-C interoperability. However, if a certain set of code you are importing has multiple header files; group them into another header file.
 
 ```objc
