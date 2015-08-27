@@ -35,66 +35,31 @@ Just note that all suggestions are open to discussion and debate! :smile:
 
 * [Xcode Preferences](#xcode-preferences)
 * [Spacing](#spacing)
-* [Naming](#naming)
-  * [Functions and Arguments](#functions-and-arguments)
-  * [Enumerations](#enumerations)
-  * [Prose](#prose)
-  * [Class Prefixes](#class-prefixes)
-* [Access Control](#access-control)
-* [Swift Specific Guides](#swift-specific-guides)
-  * [Switch](#switch)
-  * [Properties](#properties)
-  * [Closures](#closures)
-  * [Identifiers](#identifiers)
-  * [Singleton](#singleton)
-  * [Strings](#strings)
-  * [Enums](#enums)
-  * [Documentation](#documentation)
-* [Other](#other)
-  * [Closures](#closures)
-  * [Types](#types)
-  * [Mutability – `let` over `var`](#mutability--let-over-var)
-  * [Optionals](#optionals)
-  * [Static vs dynamic code](#static-vs-dynamic-code)
-  * [Implicit getters](#implicit-getters)
-* [Code organization](#code-organization)
-  * [File](#file-code-organization)
-  * [Project](#project-code-organization)
-* [Value types over reference types](#value-types-over-reference-types)
-* [Forbidden](#forbidden)
-* [Cocoa Guide](#cocoa-guide)
-  * [Protocols](#protocols)
-    * [UITableView/UICollectionView](#uitableview)
-  * [NSNotification](#nsnotification)
-  * [View Controllers](#view-controllers)
-  * [UIView](#uiview)
-  * [Core Foundation](#core-foundation)
-  * [User Facing Strings](#user-facing-strings)
-  * [Objective-C Interoperability](#objective-c-interoperability)
 
 ## Xcode Preferences
 - Use spaces for tabs and 2 spaces per tab (Change the default in Xcode->Preferences->Text Editing->Indentation)
 
-
-
-## Spacing
+### Spacing
 
 Indent code with tabs (Below modification will automatically implement spaces). End files with an empty line.
 
 Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
-*Make liberal use of vertical whitespace to divide code into logical chunks.
-*Don’t leave trailing whitespace.
-*Not even leading indentation on blank lines.
 
-  ![Xcode Indent settings](screens/indentation.png)
-  ![Xcode Editing settings](screens/editing.png)
+ * Make liberal use of vertical whitespace to divide code into logical chunks.
+ * Don’t leave trailing whitespace.
+ * Not even leading indentation on blank lines.
 
-Setup xcode preferences as shown, for uniformity
+![Xcode Indent settings](screens/indentation.png)
+![Xcode Editing settings](screens/editing.png)
 
-* Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
-* Tip: You can re-indent by selecting some code (or ⌘A to select all) and then Control-I (or Editor\Structure\Re-Indent in the menu). Some of the Xcode template code will have 4-space tabs hard coded, so this is a good way to fix that.
+> **Setup xcode preferences as shown, for uniformity**
+
+>* Tip: You can re-indent by selecting some code (or ⌘A to select all) and then Control-I (or Editor\Structure\Re-Indent in the menu). Some of the Xcode template code will have 4-space tabs hard coded, so this is a good way to fix that.
+
+Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
 
 **Preferred:**
+
 ```swift
 if user.isHappy {
   // Do something
@@ -104,6 +69,7 @@ if user.isHappy {
 ```
 
 **Not Preferred:**
+
 ```swift
 if user.isHappy
 {
@@ -114,7 +80,8 @@ else {
 }
 ```
 
-## Naming
+## Swift Specific Guides 
+### Naming
 
 Use descriptive names with camel case for classes, methods, variables, etc. Class names should be capitalized, while method names and variables should start with a lower case letter.
 
@@ -139,7 +106,7 @@ class app_widgetContainer {
   let wHeightPct = 0.85
 }
 ```
-
+-
 
 ### Functions and Arguments
 
@@ -193,6 +160,7 @@ func reticulate(splines splines: [Double], adjustmentFactor: Double,
 }
 ```
 
+-
 
 ### Enumerations
 
@@ -206,6 +174,7 @@ enum Shape {
   case Circle
 }
 ```
+-
 
 ### Prose
 
@@ -221,7 +190,10 @@ When referring to functions in prose (tutorials, books, comments) include the re
 
 When in doubt, look at how Xcode lists the method in the jump bar – our style here matches that.
 
-![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
+<!--![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
+-->
+
+-
 
 ### Class Prefixes
 
@@ -236,8 +208,9 @@ let myClass = SomeModule.UsefulClass()
 It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
 On the other hand developer discretion is best.
 
+-
 
-## Access Control
+### Access Control
 
 Always specify access control explicitly for top-level definitions
 -Top-level functions, types, and variables should always have explicit access control specifiers:
@@ -258,8 +231,7 @@ internal struct TheFez {
 
 _Rationale:_ It's rarely appropriate for top-level definitions to be specifically `internal`, and being explicit ensures that careful thought goes into that decision. Within a definition, reusing the same access control specifier is just duplicative, and the default is usually reasonable.
 
-
-## Swift Specific Guides 
+-
 
 ### Switch
 - Switch statements should have each case statement not indented and all code executed for that case indented below:
@@ -312,6 +284,8 @@ default:
 }
 ```
 
+-
+
 ### Properties
 - If making a read-only computed variable, provide the getter without the get {} around it:
 
@@ -333,7 +307,7 @@ var computedProp: String {
           }
     }
     set {
-    println(newValue)
+    	println(newValue)
     }
 }
 ```
@@ -386,6 +360,7 @@ var computedProp: String {
   }
 }
 
+-
 
 ### Closures
 - Do not use parameter types when declaring parameter names to use in a closure. Also, keep parameter names on same line as opening brace for closures:
@@ -479,79 +454,88 @@ let numbers = [-1, 2, 3, -4, 5]
 let positive = filter(numbers, isPositive)
 ```
 
+-
+
 ### Identifiers
+
 - Only use self.<parameter name> if you need to, which is when you have a parameter of the same name as the instance variable, or in closures:
-
-```swift
-class Test {
-
-    var a: (() -> Void)?
-    var b: Int = 3
-
-    func foo(a: () -> Void) {
-        self.a = a
-    }
-
-    func foo1() {
-        foo() {
-            println(self.b)
-        }
-    }
-}
-```
+	
+	```swift
+	class Test {
+	
+	    var a: (() -> Void)?
+	    var b: Int = 3
+	
+	    func foo(a: () -> Void) {
+	        self.a = a
+	    }
+	
+	    func foo1() {
+	        foo() {
+	            println(self.b)
+	        }
+	    }
+	}
+	```
 
 - If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
 
-```swift
-static var testVar: String
-```
+	```swift
+	static var testVar: String
+	```
 
 - When declaring dictionary types, include a space before the key type and after the colon:
 
-```swift
-var someDictionary: [String : Int]
-```
+	```swift
+	var someDictionary: [String : Int]
+	```
 
 - When declaring a constant, use camel case with the first letter uppercase.
 
-```swift
-class TestClass {
-    let ConstantValue = 3
-}
-```
-
+	```swift
+	class TestClass {
+	    let ConstantValue = 3
+	}
+	```
+	
 - To declare a set of constants not to be used for switching, use a struct:
+	
+	```swift
+	struct Constants {
+	    static let A = "A"
+	    static let B = "B"
+	}
+	```
 
-```swift
-struct Constants {
-    static let A = "A"
-    static let B = "B"
-}
-```
+-
 
 ### Singleton
 - Implement a singleton by having this at the top of your class definition and a private initializer:
 
-```swift
-class ClassA {
+	```swift
+	class ClassA {
+	
+	  static let sharedInstance: ClassA = ClassA()
+	  
+	  private init() {
+	    // ...
+	  }
+	}
+	```
 
-  static let sharedInstance: ClassA = ClassA()
-  
-  private init() {
-    // ...
-  }
-}
-```
+-
 
 ### Strings
 - When appending to a string, always use the += operator.
-
-```swift
-var newString = "Hello"
-newString += " world!"
-```
+	
+	```swift
+	var newString = "Hello"
+	newString += " world!"
+	```
 
 *Note: do not concatenate user-facing strings as the ordering could change in different languages.*
+
+-
 
 ### Enums
 - When using an enum, always prefer the shorthand syntax when possible. The shorthand syntax should be possible whenever the type does not need to be inferred from the assigned value. Note: there are certain bugs that don't allow them to be used everywhere they should be possible.
@@ -577,6 +561,8 @@ if shouldBeA {
 ```swift
 var testValue: TestEnum = .A
 ```
+
+-
 
 ### Documentation
 
@@ -622,76 +608,71 @@ func foo3(input: String) -> Bool {
 ```
 
 
-## Other
+-
 
-### Types
+### Custom Types & Type Identifiers
 
 Try to use native Swift types before you come up with your own. Every type can be extended, so sometimes instead of introducing new types, it's convenient to extend or alias existing ones.
 
-Remember that Objective-C classes that have native Swift equivalents are not automatically bridged, e.g. `NSString` is not implicitly bridged to `String` in the following example.
+- Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
 
-```swift
-func lowercase(string String) -> String
 
-let string: NSString = /* ... */
+	**Preferred:**
+	
+	```swift
+	let name = "John Appleseed"
+	let planets = [.Mars, .Saturn]
+	let colors = ["red": 0xff0000, "green": 0x00ff00]
+	```
+	
+	
+	**Not Preferred:**
+	
+	```swift
+	let name: String = "Amanda Smith"
+	let planets: [Planet] = [.Venus, .Earth]
+	let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
+	```
 
-lowercase(string) // compile error
-lowercase(string as String) // no error
-```
+- Omit type parameters where possible
 
-Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
+	Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
+	
+	```swift
+	struct Composite<T> {
+	  …
+	  func compose(other: Composite<T>) -> Composite<T> {
+	    return Composite<T>(self, other)
+	  }
+	}
+	```
+	
+	could be rendered as:
+	
+	```swift
+	struct Composite<T> {
+	  …
+	  func compose(other: Composite) -> Composite {
+	    return Composite(self, other)
+	  }
+	}
+	```
+	
+	_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
 
-```swift
-// preferred
+-
 
-let name = "John Appleseed"
-let planets = [.Mars, .Saturn]
-let colors = ["red": 0xff0000, "green": 0x00ff00]
-```
-
-```swift
-// not preferred
-
-let name: String = "Amanda Smith"
-let planets: [Planet] = [.Venus, .Earth]
-let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
-```
-
-Also, associate colon with type identifier.
-
-```swift
-// preferred
-class VideoArticle: Article
-```
-
-```swift
-// not preferred
-class VideoArticle : Article
-```
-
-Typealiases should be short and meaningful.
-
-```swift
-// preferred
-
-typealias MoneyAmount = Double
-```
-
-```swift
-// not preferred
-
-typealias Money = Double
-```
-
-### Mutability – `let` over `var`
+### Mutability 
 
 It's safer to assume that a variable is immutable, thus it's highly recommended to declare values as constants, using `let`. Immutable constants ensure their values will never change, which results in less error-prone code.
 
 Mutable `var` variables should only be used when necessary, e.g. when you're absolutely sure you will be changing their values in the future.
 
+-
 ### Optionals
 
--Force unwrapping should be avoided as much as possible. Implicitly unwrapped optionals lead to less safe code and can cause unwanted crashes. Use optional chaining or `if-let` bindings to unwrap optional values.
+Force unwrapping should be avoided as much as possible. Implicitly unwrapped optionals lead to less safe code and can cause unwanted crashes. Use optional chaining or `if-let` bindings to unwrap optional values.
+
 - When using if-let bindings for unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. 
 
 ```swift
@@ -699,14 +680,8 @@ func possibleBike() -> Bike? {
     // content
 }
 
-let bike = possibleBike()
-if let bike = bike {
-    // content
-}
-
-//OR 
 if let bike = possibleBike() {
-  
+    // content
 }
 ```
 
@@ -729,7 +704,7 @@ if let name = name, age = age where age >= 13 {
 }
 ```
 
-However, implicitly unwrapped optionals can sometimes be useful. They may be used in unit tests, where system under test should never be `nil`. There's no point executing rest of the tests if one of them fails.
+Implicitly unwrapped optionals can also sometimes be useful. They may be used in unit tests, where the current system under test should never be `nil`. There's no point executing rest of the tests if any one of them fails.
 
 ```swift
 var sut: SystemUnderTest!
@@ -748,11 +723,15 @@ it("should behave as expected") {
 }
 ```
 
+-
+
 ### Static vs. dynamic code
 
 Static code is code where logic and control can be resolved at compile-time. The Swift compiler is able to optimize predictable code to work better and faster. Try to make use of this feature and write as much static code as possible.
 
 On the other hand, dynamic code's control flow is resolved at run-time, which means it's not predictable and, as a result, can't be optimized by the compiler. Avoid using `dynamic` and `@objc` attributes.
+
+-
 
 ### Implicit getters
 
@@ -771,42 +750,17 @@ struct Person {
 }
 ```
 
-### Make classes `final` by default
+-
+
+### Classes and Inheritance
 
 Classes should start as `final`, and only be changed to allow subclassing if a valid need for inheritance has been identified. Even in that case, as many definitions as possible _within_ the class should be `final` as well, following the same rules.
 
 _Rationale:_ Composition is usually preferable to inheritance, and opting _in_ to inheritance hopefully means that more thought will be put into the decision.
 
+### Operator definitions
 
-### Omit type parameters where possible
-
-Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
-
-```swift
-struct Composite<T> {
-  …
-  func compose(other: Composite<T>) -> Composite<T> {
-    return Composite<T>(self, other)
-  }
-}
-```
-
-could be rendered as:
-
-```swift
-struct Composite<T> {
-  …
-  func compose(other: Composite) -> Composite {
-    return Composite(self, other)
-  }
-}
-```
-
-_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
-
-### Use whitespace around operator definitions
-
-Use whitespace around operators when defining them. Instead of:
+- Use whitespace around operators when defining them. Instead of:
 
 ```swift
 func <|(lhs: Int, rhs: Int) -> Int
@@ -826,17 +780,12 @@ _Rationale:_ Operators consist of punctuation characters, which can make them di
 
 ### File Code Organization
 
- The following section refers to marks, which are Swift's version of #pragma mark in Objective-C to separate code. There are 2 types of marks: section marks and sub-section marks.*
+ The following section refers to marks, which are Swift's version of `#pragma mark` in Objective-C to separate code. There are 2 types of marks:
+ 
+ - Section Marks: `// MARK: - Section Name`
+ - Sub-section Marks:`// MARK: Sub-section Name`
 
- Section Marks:
-
-        // MARK: - Section Name
-
- Sub-section Marks:
-
-        // MARK: Sub-section Name
-
-- Use marks to indicate new sections in code. Separate the mark comment with a new line.
+ Use marks to indicate new sections in code. Separate the mark comment with a new line.
 
 ```swift
 class Stuff {
@@ -849,7 +798,7 @@ class Stuff {
 }
 ```
 
-- The class/struct file layout should be ordered as follows with respect to marks and code organization (Note: See naming convention specified in above note):
+The class/struct file layout should be ordered as follows with respect to marks and code organization (Note: See naming convention specified in above note):
 
         - Section: Singleton
         - Section: Declared Types (Enums, Structs, etc.), Type Aliases
@@ -868,16 +817,19 @@ class Stuff {
         - Section: Protocols
             - Sub-section: <Protocol Name>
 
-- When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. 1 extension per protocol:
+- When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. One extension per protocol:
 
-Thus Source files will have the following organization.
+Thus Source files will look like this...
 
 ```swift
-// 1. imports
-
 import MoneyKit
 
-// 2. classes, structs, enums
+/**
+//Mark: - Currency
+*/
+enum Currency {
+	//content
+}
 
 /**
 //Mark: - Printabilty
@@ -895,43 +847,36 @@ class Wallet {
 
     // MARK: - Properties
 
-    // 2.1. public, internal properties
     // MARK: Public Properties
 
     let cards: [Card]
     private(set) var cash: Cash
     
-    // 2.2. private properties
     // MARK: Private Properties
     
     unowned private let owner: Person
     
     // MARK: - Methods
 
-    // 2.3. initializers
     // MARK: Initializer Methods
 
     init(cash: Cash, cards: [Card], owner: Person)
     
-    // 2.4. public
     // MARK: Public Methods
     
     public func affordsTransaction(transaction: Transaction) -> Bool
     
-    // 2.5 internal functions
     // MARK: InternalMethods Methods
 
     func calculateTransactionWithCard(card: Card) -> Transaction
     
-    // 2.6. private functions
     // MARK: Private Methods
 
     private func cardWithSuffiecientCash(cash: Cash) -> Card?
     
 }
 
-// 3. extensions, protocol implementations
-// MARK: - Protocol Implementation
+// MARK: - Protocol Implementation/Extensions
 // MARK: Printable
 
 extension Wallet: Printabilty {
@@ -946,6 +891,8 @@ extension Wallet: Printabilty {
 
 }
 ```
+
+-
 
 ### Project Code Organization
 
@@ -967,7 +914,7 @@ extension Wallet: Printabilty {
         *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
         *   `ProjectName.xcdatamodeld`
     *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
-    *   `Storyboards/` (contains `.storyboards`s)
+    *   `Storyboards/` (contains `.storyboard`s)
     *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
     *   `Base.lproj/` (if using localized strings)
     *   `Shared/`
@@ -1009,9 +956,9 @@ class FileStream {
 
 Keep in mind that inheritance is not a sufficient argument to use classes. You should try to compose your types using protocols.
 
-```swift
-// preferred
+**Preferred**
 
+```swift
 protocol Polygon {
     var numberOfSides: Int { get }
 }
@@ -1021,9 +968,9 @@ struct Triangle: Polygon {
 }
 ```
 
-```swift
-// not preferred
+**Not Preferred**
 
+```swift
 class Polygon {
     let numberOfSides: Int
     init(numberOfSides: Int)
@@ -1035,14 +982,6 @@ class Triangle: Polygon {
     }
 }
 ```
-
-## Forbidden
-
-Types should never have prefixes because their names are already implicitly mangled and prefixed by their module name.
-
-Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
-
-Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
 
 ## Cocoa Guides
 
@@ -1066,6 +1005,8 @@ class TableViewCell: UITableViewCell, ReusableView {
 }
 ```
 > **Reasoning**: When registering cells for reuse in a UITableView or UICollectionView, you need the nib name to load the nib and the reuse identifier.
+
+-
 
 ### NSNotification
 Name notifications in reverse domain format with the notification name in Capitalized Camel Case.
@@ -1105,6 +1046,8 @@ func deregisterNotifications() {
 }
 ```
 
+-
+
 ### View Controllers
 If the view controller is associated with a Storyboard, create a class method named createInstance to return an initialized instance of the view controller from the Storyboard.
 
@@ -1125,6 +1068,8 @@ static func createInstanceWithId(id: Int) -> MasterViewController {
 }
 ```
 
+-
+
 ### UIView
 If you have a class that inherits from UIView and has a XIB file where it is layed out, create a class method named createInstance similar to the example in the View Controllers section.
 
@@ -1139,6 +1084,8 @@ class CustomView: UIView {
 }
 ```
 
+-
+
 ### Core Foundation
 When using Core Graphics structs, such as CGRect, use the initializers instead of the older CGRectMake method.
 
@@ -1151,6 +1098,8 @@ If you need to make an instance of a struct zeroed out, utilize the class consta
 ```swift
 var zeroRect = CGRect.zeroRect
 ```
+
+-
 
 ### User Facing Strings
 Put any user-facing string in the Localizable.strings file with a key in upper camel case. Use NSLocalizedString when accessing the strings in code.
@@ -1165,6 +1114,8 @@ var userFacing = NSLocalizedString("UserFacingStringKey", comment: "")
 
 ```
 
+-
+
 ### Objective-C Interoperability
 You must have a single Objective-C bridging header for Object-C interoperability. However, if a certain set of code you are importing has multiple header files; group them into another header file.
 
@@ -1177,3 +1128,13 @@ You must have a single Objective-C bridging header for Object-C interoperability
 #import <SDWebImage/UIImage+MultiFormat.h>
 #import <SDWebImage/SDWebImagePrefetcher.h>
 ```
+
+-
+
+# Forbidden
+
+Types should never have prefixes because their names are already implicitly mangled and prefixed by their module name.
+
+Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
+
+Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
