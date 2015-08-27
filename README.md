@@ -456,10 +456,9 @@ class ClassA {
   }
 }
 ```
-  Note: Xcode currently (6.0.1) does not indent properly in this case. Use the indentation specified above.
 
 ### Optionals
-- When unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. This example shows this, but in this case it should be done within the binding.
+- When unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. 
 
 ```swift
 func possibleBike() -> Bike? {
@@ -469,6 +468,11 @@ func possibleBike() -> Bike? {
 let bike = possibleBike()
 if let bike = bike {
     // content
+}
+
+//OR 
+if let bike = possibleBike() {
+  
 }
 ```
 
@@ -522,7 +526,7 @@ func foo() {
 }
 ```
 
-- If you are documenting a method, use /\*\* to begin and */ to end if it is multiline; do not indent.
+- If you are documenting a method, use /\*\* to begin and */ to end if it is multiline;
 
 ```swift
 /**
@@ -534,7 +538,7 @@ func foo2() {
 }
 ```
 
-- Use the standard Swift Documentation syntax (reST) in order to enable Quick Documentation. Follow the formatting below, exactly.
+- Use the standard Swift Documentation syntax (reST) in order to enable Quick Documentation. 
 
 Note: Make sure to test your documentation by checking it's Quick Documentation by option-clicking on the method name.
 
@@ -790,10 +794,10 @@ class TableViewCell: UITableViewCell, ReusableView {
 > **Reasoning**: When registering cells for reuse in a UITableView or UICollectionView, you need the nib name to load the nib and the reuse identifier.
 
 #### NSNotification
-Name notifications in reverse domain format with the notification name in snake case.
+Name notifications in reverse domain format with the notification name in Capitalized Camel Case.
 
 ```swift
-com.linkedin.slideshare.notification_name
+com.linkedin.slideshare.NotificationName
 ```
 
 Create a struct to hold all notification names as constants.
