@@ -34,8 +34,42 @@ Just note that all suggestions are open to discussion and debate! :smile:
 ## Table of contents
 
 * [Xcode Preferences](#xcode-preferences)
-* [Spacing](#spacing)
+	* [Spacing](#spacing)
+* [Swift Specific Guides](#swift-specific-guides)
+	* [Naming](#naming)
+		* [Functions and Arguments](#functions-and-arguments)
+		* [Enumerations](#enumerations)
+	* [Access Control](#access-control)
+	* [Switch](#switch)
+	* [Properties](#properties)
+	* [Closures](#closures)
+	* [Identifiers](#identifiers)
+	* [Singleton](#singleton)
+	* [Strings](#strings)
+	* [Enums](#enums)
+	* [Documentation](#documentation)
+	* [Custom Types & Type Identifiers](#custom-types-&-type-identifiers)
+	* [Mutability](#mutability)
+	* [Optionals](#optionals)
+	* [Static code vs Dynamic code](#static-code-vs-dynamic-code)
+	* [Classes and Inheritance](#classes-and-inheritance)
+	* [Operator definitions](#operator-definitions)
+* [Code organization](#code-organization)
+	* [File Code Organization](#file-code-organization)
+	* [Project Code Organization](#project-code-organization)
+* [Value Types vs Reference Types](#value-types-vs-reference-types)
+* [Cocoa Specific Guides](#cocoa-specific-guides)
+	* [Protocols](#protocols)
+		* [UITableView & UICollectionView](#UITableView-&-UICollectionView)
+	* [NSNotification](#NSNotification)
+	* [View Controllers](#View-Controllers)
+	* [UIView](#UIView)
+	* [Core Foundation](#Core-Foundation)
+	* [User Facing Strings](#User-Facing-Strings)
+	* [Objective-C Interoperability](Objective-C-Interoperability)
+* [Forbidden](#forbidden)
 
+	
 ## Xcode Preferences
 - Use spaces for tabs and 2 spaces per tab (Change the default in Xcode->Preferences->Text Editing->Indentation)
 
@@ -108,7 +142,7 @@ class app_widgetContainer {
 ```
 -
 
-### Functions and Arguments
+#### Functions and Arguments
 
 For functions and init methods, prefer named parameters for all arguments unless the context is very clear. Include external parameter names if it makes function calls more readable.
 
@@ -162,7 +196,7 @@ func reticulate(splines splines: [Double], adjustmentFactor: Double,
 
 -
 
-### Enumerations
+#### Enumerations
 
 Use UpperCamelCase for enumeration values:
 
@@ -176,7 +210,7 @@ enum Shape {
 ```
 -
 
-### Prose
+#### Method Names in Documentation
 
 When referring to functions in prose (tutorials, books, comments) include the required parameter names from the caller's perspective or `_` for unnamed parameters.
 
@@ -195,9 +229,9 @@ When in doubt, look at how Xcode lists the method in the jump bar – our style
 
 -
 
-### Class Prefixes
+#### Class Prefixes
 
-Swift types are automatically namespaced by the module that contains them and you should not add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
+Swift types are automatically namespaced by the module that contains them and you should ***NOT*** add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
 
 ```swift
 import SomeModule
@@ -287,6 +321,8 @@ default:
 -
 
 ### Properties
+
+
 - If making a read-only computed variable, provide the getter without the get {} around it:
 
 ```swift
@@ -352,6 +388,7 @@ class Test {
 
 - Prefer creating Computed Properties for any methods which return something and take no parameters.
 
+```swift
 var computedProp: String {
   if someBool {
     return "Hello"
@@ -359,10 +396,12 @@ var computedProp: String {
     return "No"
   }
 }
+```
 
 -
 
 ### Closures
+
 - Do not use parameter types when declaring parameter names to use in a closure. Also, keep parameter names on same line as opening brace for closures:
 
 ```swift
@@ -725,30 +764,11 @@ it("should behave as expected") {
 
 -
 
-### Static vs. dynamic code
+### Static code vs Dynamic code
 
 Static code is code where logic and control can be resolved at compile-time. The Swift compiler is able to optimize predictable code to work better and faster. Try to make use of this feature and write as much static code as possible.
 
 On the other hand, dynamic code's control flow is resolved at run-time, which means it's not predictable and, as a result, can't be optimized by the compiler. Avoid using `dynamic` and `@objc` attributes.
-
--
-
-### Implicit getters
-
-Read-only computed properties don't need an explicit getter, thus it can be ommited. This also applies to read-only subscripts.
-
-```swift
-struct Person {
-
-    let height: Float
-    let weight: Float
-
-    var bmi: Float {
-        return weight / (height * height)
-    }
-    
-}
-```
 
 -
 
@@ -930,7 +950,7 @@ extension Wallet: Printabilty {
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
 
-## Value types over reference types
+## Value Types vs Reference Types
 
 Value types, such as structs, enums and tuples are usually simpler than reference types (classes) and they're always passed by copying. This means they're independent thread-safe instances, which makes code simpler and safer. In addition, `let` and `var` work as expected.
 
@@ -983,7 +1003,7 @@ class Triangle: Polygon {
 }
 ```
 
-## Cocoa Guides
+## Cocoa Specific Guides
 
 ### Protocols
 
