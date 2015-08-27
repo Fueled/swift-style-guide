@@ -53,14 +53,17 @@ This guide is intended to outline the set of shared practices Fueled will apply 
 
 ## Spacing
 
-Indent code with tabs (above modification will automatically implement spaces). End files with an empty line.
+Indent code with tabs (Below modification will automatically implement spaces). End files with an empty line.
 
 Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
 *Make liberal use of vertical whitespace to divide code into logical chunks.
 *Don’t leave trailing whitespace.
 *Not even leading indentation on blank lines.
 
-  ![Xcode indent settings](screens/indentation.png)
+  ![Xcode Indent settings](screens/indentation.png)
+  ![Xcode Editing settings](screens/editing.png)
+
+Setup xcode preferences as shown, for uniformity
 
 * Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
 * Tip: You can re-indent by selecting some code (or ⌘A to select all) and then Control-I (or Editor\Structure\Re-Indent in the menu). Some of the Xcode template code will have 4-space tabs hard coded, so this is a good way to fix that.
