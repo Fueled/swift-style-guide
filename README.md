@@ -388,7 +388,7 @@ struct GlobalNotifications {
 Create notification handlers as lazy closures.
 
 ```swift
-private lazy var handleNotification: (NSNotification!) -> Void { [weak self] notification in
+private lazy var handleNotificationABC: (NSNotification!) -> Void { [weak self] notification in
     // Handle the notification
 }
 ```
@@ -455,13 +455,27 @@ If you need to make an instance of a struct zeroed out, utilize the class consta
 var zeroRect = CGRect.zeroRect
 ```
 #### Strings
-Put any user-facing string in the Localizable.strings file with a key in snake case. Use NSLocalizedString when accessing the strings in code.
+Put any user-facing string in the Localizable.strings file with a key in upper camel case. Use NSLocalizedString when accessing the strings in code.
 
 ```swift
 // Localizable.strings //
 // <App Section>
-"user_facing_string_key" = "This is a user-facing string."
+"UserFacingStringKey" = "This is a user-facing string."
 
 // Someting.swift //
-var userFacing = NSLocalizedString("user_facing_string_key", comment: "")
+var userFacing = NSLocalizedString("UserFacingStringKey", comment: "")
+
+```
+
+#### Objective-C Interoperability
+You must have a single Objective-C bridging header for Object-C interoperability. However, if a certain set of code you are importing has multiple header files; group them into another header file.
+
+```objc
+// <Product-Name>-Bridging-Header.h
+#import "SDWebImageHeader.h"
+
+// SDWebImageHeader.h
+#import <SDWebImage/UIImageView+WebCache.h>
+#import <SDWebImage/UIImage+MultiFormat.h>
+#import <SDWebImage/SDWebImagePrefetcher.h>
 ```
