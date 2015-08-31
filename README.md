@@ -1224,8 +1224,6 @@ You must have a single Objective-C bridging header for Object-C interoperability
 
 # Forbidden
 
-Types should never have prefixes because their names are already implicitly mangled and prefixed by their module name.
-
 Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
 
 Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
