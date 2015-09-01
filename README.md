@@ -72,15 +72,22 @@ Just note that all suggestions are open to discussion and debate! :smile:
 
 	
 ## Xcode Preferences
-- Use spaces for tabs and 2 spaces per tab (Change the default in Xcode->Preferences->Text Editing->Indentation)
 
-### Spacing
+### Indentation
 
-Code should be indented with tabs (as shown below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. It is recommended that line wrapping is disabled to further improve readability, but this is strictly a user preference.
+Code should be indented with tabs (as shown in the example below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. This can be changed from the default in Xcode->Preferences->Text Editing->Indentation
+
+It is also recommended that you disable line wrapping to further improve readability. While this is strictly a user preference, it does become helpful in our enforcement of line length as noted below.
 
 ![Xcode Indent settings](screens/indentation.png)
 
-It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lins less prone to error.
+It is a standard of our coding guidelines to limit line length to no more than 120 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 120.
+
+You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
+
+![Xcode Editing settings](screens/editing.png)
+
+## Line Spacing
 
 Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
 
@@ -88,7 +95,7 @@ Vertical spaces should be used in long methods to separate its name from impleme
  * Lead logical blocks with a comment line if necessary
  * Remove any trailing whitespace or leading indentation on blank lines
 
-![Xcode Editing settings](screens/editing.png)
+It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error.
 
 > **Setup xcode preferences as shown, for uniformity**
 
@@ -100,9 +107,9 @@ Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open o
 
 ```swift
 if user.isHappy {
-  // Do something
+    // Do something
 } else {
-  // Do something else
+    // Do something else
 }
 ```
 
@@ -129,8 +136,8 @@ Use descriptive names with camel case for classes, methods, variables, etc. Clas
 private let maximumWidgetCount = 100
 
 class WidgetContainer {
-  var widgetButton: UIButton
-  let widgetHeightPercentage = 0.85
+    var widgetButton: UIButton
+    let widgetHeightPercentage = 0.85
 }
 ```
 
@@ -140,8 +147,8 @@ class WidgetContainer {
 let MAX_WIDGET_COUNT = 100
 
 class app_widgetContainer {
-  var wBut: UIButton
-  let wHeightPct = 0.85
+    var wBut: UIButton
+    let wHeightPct = 0.85
 }
 ```
 -
@@ -171,8 +178,8 @@ Follow the standard Apple convention of referring to the first parameter in the 
 
 ```swift
 class Guideline {
-  func combineWithString(incoming: String, options: Dictionary? = nil) { ... }
-  func upvoteBy(amount: Int) { ... }
+    func combineWithString(incoming: String, options: Dictionary? = nil) { ... }
+    func upvoteBy(amount: Int) { ... }
 }
 ```
 
@@ -194,7 +201,7 @@ and add an extra indent on subsequent lines:
 func reticulate(splines splines: [Double], adjustmentFactor: Double,
     translateConstant: Int, comment: String) -> Bool {
         // reticulate code goes here
-           return isSomeStuff
+        return isSomeStuff
 }
 ```
 
@@ -206,10 +213,10 @@ Use UpperCamelCase for enumeration values:
 
 ```swift
 enum Shape {
-  case Rectangle
-  case Square
-  case Triangle
-  case Circle
+    case Rectangle
+    case Square
+    case Triangle
+    case Circle
 }
 ```
 -
@@ -263,10 +270,10 @@ However, definitions within those can leave access control implicit, where appro
 
 ```swift
 internal struct TheFez {
-  var owner: Person = Joshaber()
-  override func kickTheFez() {
-	  //
-  }
+    var owner: Person = Joshaber()
+    override func kickTheFez() {
+    //
+    }
 }
 ```
 
