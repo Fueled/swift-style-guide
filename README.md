@@ -76,15 +76,18 @@ Just note that all suggestions are open to discussion and debate! :smile:
 
 ### Spacing
 
-Indent code with tabs (Below modification will automatically implement spaces). End files with an empty line.
+Code should be indented with tabs (as shown below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. It is recommended that line wrapping is disabled to further improve readability, but this is strictly a user preference.
+
+![Xcode Indent settings](screens/indentation.png)
+
+It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lins less prone to error.
 
 Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
 
- * Make liberal use of vertical whitespace to divide code into logical chunks.
- * Don’t leave trailing whitespace.
- * Not even leading indentation on blank lines.
+ * Make liberal use of single blank lines to divide code into logical blocks
+ * Lead logical blocks with a comment line if necessary
+ * Remove any trailing whitespace or leading indentation on blank lines
 
-![Xcode Indent settings](screens/indentation.png)
 ![Xcode Editing settings](screens/editing.png)
 
 > **Setup xcode preferences as shown, for uniformity**
