@@ -723,7 +723,6 @@ Try to use native Swift types before you come up with your own. Every type can b
 
 - Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
 
-
 **Preferred:**
 
 ```swift
@@ -745,7 +744,7 @@ let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
 
 	Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
 	
-	**Not Preferred:**
+**Not Preferred:**
 	
 ```swift
 struct Composite<T> {
@@ -756,7 +755,7 @@ struct Composite<T> {
 }
 ```
 
-	**Preferred:**
+**Preferred:**
 	
 ```swift
 struct Composite<T> {
