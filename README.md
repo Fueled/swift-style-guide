@@ -81,6 +81,10 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 ![Xcode Indent settings](screens/indentation.png)
 
+> **Setup xcode preferences as shown, for uniformity**
+
+>* Tip: To convert existing projects to this new format, you can select all code in a file (⌘A to select all) and then apply your new settings (using ^I or Editor->Structure->Re-Indent). Unfortunately, there is no way to do this to the entire project so you'll need to do it for each file in your project.
+
 It is a standard of our coding guidelines to limit line length to no more than 120 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 120.
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
@@ -96,10 +100,6 @@ Vertical spaces should be used in long methods to separate its name from impleme
  * Remove any trailing whitespace or leading indentation on blank lines
 
 It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error.
-
-> **Setup xcode preferences as shown, for uniformity**
-
->* Tip: You can re-indent by selecting some code (or ⌘A to select all) and then Control-I (or Editor\Structure\Re-Indent in the menu). Some of the Xcode template code will have 4-space tabs hard coded, so this is a good way to fix that.
 
 Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
 
