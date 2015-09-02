@@ -342,11 +342,11 @@ default:
 
 ```swift
 for _ in 0..<3 {
-  println("Hello three times")
+    println("Hello three times")
 }
 
 for (index, person) in enumerate(attendeeList) {
-  println("\(person) is at position #\(index)")
+    println("\(person) is at position #\(index)")
 }
 ```
 
@@ -354,12 +354,12 @@ for (index, person) in enumerate(attendeeList) {
 
 ```swift
 for var i = 0; i < 3; i++ {
-  println("Hello three times")
+    println("Hello three times")
 }
 
 for var i = 0; i < attendeeList.count; i++ {
-  let person = attendeeList[i]
-  println("\(person) is at position #\(i)")
+    let person = attendeeList[i]
+    println("\(person) is at position #\(i)")
 }
 ```
 
@@ -374,7 +374,7 @@ for var i = 0; i < attendeeList.count; i++ {
 var computedProp: String {
     if someBool {
         return "Hello"
-      }
+    }
 }
 ```
 
@@ -385,7 +385,7 @@ var computedProp: String {
     get {
         if someBool {
             return "Hello"
-          }
+        }
     }
     set {
     	println(newValue)
@@ -413,12 +413,12 @@ var property = 10 {
     willSet {
         if newValue == 10 {
             println("It’s 10")
-         }
+        }
     }
     didSet {
-         if oldValue == 10 {
-               println("It was 10")
-         }
+        if oldValue == 10 {
+            println("It was 10")
+        }
     }
 }
 ```
@@ -435,19 +435,18 @@ class Test {
 
 ```swift
 var computedProp: String {
-  if someBool {
-    return "Hello"
-  } else {
-    return "No"
-  }
-}
+    if someBool {
+        return "Hello"
+    } else {
+        return "No"
+    }
 ```
 
 - It is acceptable to define multiple variables and structures on a single line if they share a common purpose / context.
 
 ```swift
 class Circle {
-  var x:Int = 0, y:Int = 0
+    var x:Int = 0, y:Int = 0
 }
 ```
 
@@ -521,9 +520,9 @@ class Test {
     }
     
     func foo3() {
-	 	foo1()
-	 	foo1()
-	 	foo1()
+        foo1()
+        foo1()
+        foo1()
     }
 }
 ```
@@ -556,12 +555,12 @@ newMethod(10) { param in
 
 ```swift
 testMethod(param: 2.5,
-      success: {
+    success: {
         println("success")
-      },
-      failure: {
+    },
+    failure: {
         println("failure")
-      })
+    })
 ```
 
 - Use trailing closure syntax if a closure is the only parameter:
@@ -629,11 +628,10 @@ let positive = filter(numbers, isPositive)
 ```swift
 class ClassA {
 
-  static let sharedInstance: ClassA = ClassA()
+    static let sharedInstance: ClassA = ClassA()
   
-  private init() {
-    // ...
-  }
+    private init() {
+        // ...
 }
 ```
 
@@ -756,10 +754,10 @@ let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
 	
 ```swift
 struct Composite<T> {
-  …
-  func compose(other: Composite<T>) -> Composite<T> {
-    return Composite<T>(self, other)
-  }
+    …
+    func compose(other: Composite<T>) -> Composite<T> {
+        return Composite<T>(self, other)
+    }
 }
 ```
 
@@ -767,10 +765,10 @@ struct Composite<T> {
 	
 ```swift
 struct Composite<T> {
-  …
-  func compose(other: Composite) -> Composite {
-    return Composite(self, other)
-  }
+    …
+    func compose(other: Composite) -> Composite {
+        return Composite(self, other)
+    
 }
 ```
 
@@ -925,15 +923,15 @@ import MoneyKit
 //Mark: - Currency
 */
 enum Currency {
-	//content
+    //content
 }
 
 /**
 //Mark: - Printabilty
 */
 protocol Printabilty {
-  var description:String { get }
-  func reqMethod()
+    var description:String { get }
+    func reqMethod()
 }
 
 /**
@@ -983,7 +981,7 @@ extension Wallet: Printabilty {
     }
 
     func reqMethod() {
-      //something
+        //something
     }
 
 }
