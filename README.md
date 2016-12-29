@@ -2,6 +2,7 @@
 
 This guide is based on the following sources:
 
+- [The Swift Official Style Guide](https://swift.org/documentation/api-design-guidelines)
 - [The Swift Programming Language](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language)
 - [Github Swift style guide](https://github.com/github/swift-style-guide)
 - [Ray Wenderlich Swift style guide](https://github.com/raywenderlich/swift-style-guide)
@@ -19,6 +20,8 @@ rough priority order):
  1. Increased clarity of intent
  1. Reduced verbosity
  1. Fewer debates about aesthetics
+
+This guide has been written for Swift 3.
 
 ### Contribution
 
@@ -85,7 +88,7 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 >* To convert existing projects to this new format, you can select all code in a file (⌘A to select all) and then apply your new settings (using ^I or Editor->Structure->Re-Indent). Unfortunately, there is no way to do this to the entire project so you'll need to do it for each file in your project.
 
-It is a standard of our coding guidelines to limit line length to no more than 120 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 120.
+It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -158,17 +161,19 @@ class app_widgetContainer {
 For functions and init methods, prefer named parameters for all arguments unless the context is very clear. Include external parameter names if it makes function calls more readable.
 
 Function names should be as descriptive and meaningful as possible. Try to express its intent in the name, by keeping it compact at the same time.
-Arguments should also be descriptive. Remember that you can use argument labels, which may be more meaningful to a user.
+Arguments should also be descriptive. Remember that you can use argument labels, which may be more meaningful to a user. 
+
+> This is even more true with projects implemented in Swift 3 because of its Great Renaming.
 
 **Preferred:**
 
 ```swift
-func convert(point point: Point, toView view: View) -> Point
+func convert(point point: Point, to view: View) -> Point
 ```
 **Not Preferred:**
 
 ```swift
-func convertPoint(point: Point, fromView view: View) -> Point
+func convertPoint(point: Point, toView view: View) -> Point
 ```
 
 Use default values for arguments where a function expects any value or some specific value most of the time. If a particular argument is not required for a function, it's good to make it optional and `nil` by default.
@@ -209,14 +214,14 @@ func reticulate(splines splines: [Double], adjustmentFactor: Double,
 
 #### Enumerations
 
-Use UpperCamelCase for enumeration values:
+Use lowerCamelCase for enumeration values:
 
 ```swift
 enum Shape {
-    case Rectangle
-    case Square
-    case Triangle
-    case Circle
+    case rectangle
+    case square
+    case triangle
+    case circle
 }
 ```
 -
@@ -272,10 +277,12 @@ However, definitions within those can leave access control implicit, where appro
 internal struct TheFez {
     var owner: Person = Joshaber()
     override func kickTheFez() {
-    //
+        //
     }
 }
 ```
+
+Authors should use `private` when possible and only `fileprivate` when it is required for improved encapsulation. For example when it is used by an extension in the same file. `private` and `fileprivate` mean the same thing at file scope, and in this case you should prefer `private`.
 
 _Rationale:_ It's rarely appropriate for top-level definitions to be specifically `internal`, and being explicit ensures that careful thought goes into that decision. Within a definition, reusing the same access control specifier is just duplicative, and the default is usually reasonable.
 
@@ -301,16 +308,16 @@ default:
 ```swift
 struct TestValue {
     enum Val {
-        case A
-        case B
+        case a
+        case b
     }
-    var value: Val = .A
+    var value: Val = .a
     var detail: String = "Test"
 }
 var testValue = TestValue()
 
 switch (testValue.value, testValue.detail) {
-case (.A, "Test"):
+case (.a, "Test"):
     println("This is printed")
 default:
     println("This is not printed")
@@ -440,13 +447,14 @@ var computedProp: String {
     } else {
         return "No"
     }
+}
 ```
 
 - It is acceptable to define multiple variables and structures on a single line if they share a common purpose / context.
 
 ```swift
 class Circle {
-    var x:Int = 0, y:Int = 0
+    var x: Int = 0, y: Int = 0
 }
 ```
 
@@ -476,17 +484,17 @@ var faxNumber: Optional<Int>
 static var testVar: String
 ```
 
-- When declaring dictionary types, include a space before the key type and after the colon:
+- When declaring dictionary types, include a space after the colon only:
 
 ```swift
-var someDictionary: [String : Int]
+var someDictionary: [String: Int]
 ```
 
-- When declaring a constant, use camel case with the first letter uppercase.
+- Names of types and protocols are UpperCamelCase. Everything else is lowerCamelCaseWhen, e.g. when declaring a constant:
 
 ```swift
 class TestClass {
-    let ConstantValue = 3
+    let constantValue = 3
 }
 ```
 	
@@ -496,16 +504,15 @@ class TestClass {
 
 ```swift
 struct Constants {
-    static let A = "A"
-    static let B = "B"
+    static let a = "A"
+    static let b = "B"
 }
 ```
 	
-- Only use self.<parameter name> or self.<methodName()> if you need to, which is when you have a parameter of the same name as the instance variable, or in closures:
+- Always use `self.<parameter name>` or `self.<methodName()>` when possible, in order to distinguish instance to local variables at a glance.
 
 ```swift
 class Test {
-
     var a: (() -> Void)?
     var b: Int = 3
 
@@ -514,15 +521,15 @@ class Test {
     }
 
     func foo1() {
-        foo() {
+        self.foo() {
             println(self.b)
         }
     }
     
     func foo3() {
-        foo1()
-        foo1()
-        foo1()
+        self.foo1()
+        self.foo1()
+        self.foo1()
     }
 }
 ```
@@ -627,8 +634,7 @@ let positive = filter(numbers, isPositive)
 
 ```swift
 class ClassA {
-
-    static let sharedInstance: ClassA = ClassA()
+    static let shared: ClassA = ClassA()
   
     private init() {
         // ...
@@ -654,24 +660,24 @@ newString += " world!"
 
 ```swift
 enum TestEnum {
-    case A
-    case B
+    case a
+    case b
 }
 
 var theValue: TestEnum?
 var shouldBeA = true
 
 if shouldBeA {
-    theValue = .A
+    theValue = .a
 } else {
-    theValue = .B
+    theValue = .b
 }
 ```
 
 - When declaring and setting a variable/constant of an enum type, do so in the following manner.
 
 ```swift
-var testValue: TestEnum = .A
+var testValue: TestEnum = .a
 ```
 
 -
@@ -719,7 +725,6 @@ func foo3(input: String) -> Bool {
 }
 ```
 
-
 -
 
 ### Custom Types & Type Identifiers
@@ -732,7 +737,7 @@ Try to use native Swift types before you come up with your own. Every type can b
 
 ```swift
 let name = "John Appleseed"
-let planets = [.Mars, .Saturn]
+let planets = [.mars, .saturn]
 let colors = ["red": 0xff0000, "green": 0x00ff00]
 ```
 	
@@ -741,14 +746,25 @@ let colors = ["red": 0xff0000, "green": 0x00ff00]
 
 ```swift
 let name: String = "Amanda Smith"
-let planets: [Planet] = [.Venus, .Earth]
+let planets: [Planet] = [.venus, .earth]
 let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
 ```
 
 - Omit type parameters where possible
 
-	Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
+Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
 	
+**Preferred:**
+    
+```swift
+struct Composite<T> {
+    …
+    func compose(other: Composite) -> Composite {
+        return Composite(self, other)
+    
+}
+```
+
 **Not Preferred:**
 	
 ```swift
@@ -760,18 +776,7 @@ struct Composite<T> {
 }
 ```
 
-**Preferred:**
-	
-```swift
-struct Composite<T> {
-    …
-    func compose(other: Composite) -> Composite {
-        return Composite(self, other)
-    
-}
-```
-
-	_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
+_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
 
 -
 
@@ -806,18 +811,18 @@ if let user = user {
 }
 ```
 
-Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement.
+Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement. If needed, you can add a line break for each optional you unwrap. 
 
 ```swift
 let name: String?
 let age: Int?
 
-if let name = name, age = age where age >= 13 {
+if let name = name, let age = age, age >= 13 {
     /* ... */
 }
 ```
 
-Implicitly unwrapped optionals can also sometimes be useful. They may be used in unit tests, where the current system under test should never be `nil`. There's no point executing rest of the tests if any one of them fails.
+Implicitly unwrapped optionals can also sometimes be useful. They may be used in unit tests or directly in the app implementation, where the current item should never be `nil`. There is no point executing the rest of the tests if any one of them fails, and it will provide with a sudden and unmissable feedback raising an implementation error when used in app directly. 
 
 ```swift
 var sut: SystemUnderTest!
@@ -883,7 +888,6 @@ _Rationale:_ Operators consist of punctuation characters, which can make them di
 
 ```swift
 class Stuff {
-
     // MARK: - Instance methods
 
     func newMethod() {
@@ -918,27 +922,20 @@ Thus Source files will look like this...
 ```swift
 import MoneyKit
 
-/**
-//Mark: - Currency
-*/
+// Mark: - Currency
 enum Currency {
     //content
 }
 
-/**
-//Mark: - Printabilty
-*/
+// Mark: - Printabilty
 protocol Printabilty {
     var description:String { get }
     func reqMethod()
 }
 
-/**
-//MARK: - Wallet
-*/
+// MARK: - Wallet
 
 class Wallet {
-
     // MARK: - Properties
 
     // MARK: Public Properties
@@ -967,14 +964,12 @@ class Wallet {
     // MARK: Private Methods
 
     private func cardWithSuffiecientCash(cash: Cash) -> Card?
-    
 }
 
 // MARK: - Protocol Implementation/Extensions
 // MARK: Printable
 
 extension Wallet: Printabilty {
-
     var description: String {
         return "\(owner.name) has \(cash) cash and \(cards.count) cards"
     }
@@ -982,7 +977,6 @@ extension Wallet: Printabilty {
     func reqMethod() {
         //something
     }
-
 }
 ```
 
@@ -1085,19 +1079,19 @@ The ReusableView Protocol should be used by any view used by a UICollectionViewC
 
 ```swift
 protocol ReusableCell {
-    static var ReuseIdentifier: String { get }
-    static var NibName: String { get }
+    static var reuseIdentifier: String { get }
+    static var nibName: String { get }
 }
 ```
 
 #### UITableViewCell & UICollectionViewCell
 
-In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. Use camel case with first letter uppercase, because it is a constant. **Note**: Please use the protocol listed above for conformance.
+In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. **Note**: Please use the protocol listed above for conformance.
 
 ```swift
 extension TableViewCell: ReusableCell {
-    static let ReuseIdentifier: String = "TableViewCellIdentifier"
-    static let NibName: String = "CustomTableViewCell"
+    static let reuseIdentifier: String = "TableViewCellIdentifier"
+    static let nibName: String = "CustomTableViewCell"
 }
 ```
 
@@ -1112,18 +1106,18 @@ Name notifications in reverse domain format with the notification name in Capita
 com.linkedin.slideshare.NotificationName
 ```
 
-Create a struct to hold all notification names as constants.
+Extend `Notification.Name` to declare all notification names as constants.
 
 ```swift
-struct GlobalNotifications {
-    static let ABC = ""
+extension Notification.Name {
+    static let abc = Notification.Name("com.linkedin.slideshare.abc")
 }
 ```
 
 Create notification handlers as lazy closures.
 
 ```swift
-private lazy var handleNotificationABC: (NSNotification!) -> Void { [weak self] notification in
+private lazy var handleNotificationAbc: (NSNotification!) -> Void { [weak self] notification in
     // Handle the notification
 }
 ```
@@ -1136,7 +1130,7 @@ Create a registerNotifications() method and deregisterNotifications().
 func registerNotifications() {
     let notificationCenter = NSNotificationCenter.defaultCenter()
 
-    notificationCenter.addObserver(self, selector: handleNotificationABC, name: GlobalNotifications.ABC, object: nil)
+    notificationCenter.addObserver(self, selector: handleNotificationABC, name: .abc, object: nil)
 }
 
 func deregisterNotifications() {
@@ -1173,8 +1167,7 @@ If you have a class that inherits from UIView and has a XIB file where it is lay
 
 ```swift
 class CustomView: UIView {
-
-    private static let NibName: String = "CustomView"
+    private static let nibName: String = "CustomView"
 
     static func createInstance() -> CustomView {
         return NSBundle.mainBundle().loadNibNamed(nibName, owner: nil, options: nil)[0] as! CustomView
@@ -1188,13 +1181,13 @@ class CustomView: UIView {
 When using Core Graphics structs, such as CGRect, use the initializers instead of the older CGRectMake method.
 
 ```swift
-var rect = CGRect(x: 10, y: 10, width: 45, height: 300)
+var rect = CGRect(x: 10.0, y: 10.0, width: 45.0, height: 300.0)
 ```
 
 If you need to make an instance of a struct zeroed out, utilize the class constant.
 
 ```swift
-var zeroRect = CGRect.zeroRect
+var zeroRect: CGRect = .zero
 ```
 
 -
