@@ -102,7 +102,7 @@ Vertical spaces should be used in long methods to separate its name from impleme
  * Lead logical blocks with a comment line if necessary
  * Remove any trailing whitespace or leading indentation on blank lines
 
-A file shouldn't start with a whitespace. It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
+The very first line of a document shouldn't be empty (there can be, however, an empty line between header comments and the first line of code). It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
 
 Opening braces (`if`/`switch`/`while`/`do` etc.) should be preceded by a single space and on the same line as the declaration, or optionally on a new line if the statement is multiline. Note that `else` and `catch` statements must be on a new line after the previous declaration.
 
@@ -379,9 +379,7 @@ for var i = 0; i < attendeeList.count; i++ {
 
 ```swift
 var computedProp: String {
-    if someBool {
-        return "Hello"
-    }
+    return someBool ? "Hello" : "Bye bye"
 }
 ```
 
@@ -590,7 +588,7 @@ testMethod(param: 2.5,
 array1.map { /* content */ }
 ```
 
-- It is not mandatory to declare the return type of the clusures. It can although sometimes be helpul if makes the declaration clearer. If declaring the type of a function or closure with no return type, specify this by using Void as the return type. Also, -> and the return type should be separated by a single space or put on a separate line:
+- It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If declaring the type of a function or closure with no return type, specify this by using Void as the return type. Also, -> and the return type should be separated by a single space or put on a separate line:
 
 ```swift
 func takeClosure(aClosure: () -> Void) {
@@ -905,23 +903,29 @@ _Rationale:_ Operators consist of punctuation characters, which can make them di
         *   `ProjectName.xcodeproj/`
         *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
 
-*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure:
+*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
+    
+    #####MVC (Model-View-Controller):
+    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
+    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
+    *   `Storyboards/` (contains storyboard files)
+
+    #####MVVM (Model-View-ViewModel):
+    *   `UI/`
+        *   `FlowName/` (as many folders as flows in the application, they contain view controllers, view models and the storyboard file for the corresponding flow)
+
+    #####All:
+    *   `Helpers/` (contains utility classes, extensions and singletons)
+    *   `Networking/` (contains networking service and other API integration related classes)
     *   `Models/`
+        *   `ProjectName.xcdatamodeld`
         *   `Editable/` (Core-data Entity Categories)
         *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
-        *   `ProjectName.xcdatamodeld`
-    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
-    *   `Storyboards/` (contains `.storyboard`s)
-    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
-    *   `Base.lproj/` (if using localized strings)
-    *   `Shared/`
-        *   `Views/` (contains base `.xib`s and UI subclasses used throughout the app)
-        *   `Controllers/` (contains base view controllers used or subclassed throughout the app)
-        *   `Utilities/` (contains utility classes and singletons)
     *   `Resources/`
         *   `Fonts/`
         *   `Images/` (contains some sort of internal folder structure and uses sane naming conventions and contains Images.xcassets)
         *   `Strings/` (contains plists for localized strings)
+    *   `Base.lproj/` (if using localized strings)
     *   `Supporting Files/` (AppDelegate, InfoPlist, ProjectName-Info.plist, ProjectName-Prefix.pch, bridging-headers)
 
 
