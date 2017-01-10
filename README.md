@@ -102,9 +102,9 @@ Vertical spaces should be used in long methods to separate its name from impleme
  * Lead logical blocks with a comment line if necessary
  * Remove any trailing whitespace or leading indentation on blank lines
 
-It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error.
+The very first line of a document shouldn't be empty (there can be, however, an empty line between header comments and the first line of code). It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
 
-Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
+Opening braces (`if`/`switch`/`while`/`do` etc.) should be preceded by a single space and on the same line as the declaration, or optionally on a new line if the statement is multiline. Note that `else` and `catch` statements must be on a new line after the previous declaration.
 
 **Preferred:**
 
@@ -379,9 +379,7 @@ for var i = 0; i < attendeeList.count; i++ {
 
 ```swift
 var computedProp: String {
-    if someBool {
-        return "Hello"
-    }
+    return someBool ? "Hello" : "Bye bye"
 }
 ```
 
@@ -458,9 +456,23 @@ class Circle {
 }
 ```
 
+- Prefer using properties or methods that describe best what the code is doing. This results in more precise and self explanatory code.
+
+ **Preferred:**
+
+```swift
+if !valuesArray.isEmpty { ... } 
+```
+
+**Not Preferred:**
+
+```swift
+if valuesArray.count != 0 { ... } 
+```
+
 -
 
-- Prefer the shortcut versions of type declarations over the full generics syntax.
+- Prefer the shortcut versions of type declarations (also called syntactic sugars) over the full generics syntax.
 
 **Preferred:**
 
@@ -576,7 +588,7 @@ testMethod(param: 2.5,
 array1.map { /* content */ }
 ```
 
-- If declaring the type of a function or closure with no return type, specify this by using Void as the return type. Also, put a space before and after -> when declaring a closure type:
+- It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If declaring the type of a function or closure with no return type, specify this by using Void as the return type. Also, -> and the return type should be separated by a single space or put on a separate line:
 
 ```swift
 func takeClosure(aClosure: () -> Void) {
@@ -877,6 +889,48 @@ _Rationale:_ Operators consist of punctuation characters, which can make them di
 
 ## Code organization
 
+### Project Code Organization
+
+*   The filesystem directories should be kept in sync with the Xcode file groups.
+
+*   Files within groups may be kept alphabetized (case-insensitively, with groups before files).
+
+*   An Xcode project repository should follow this structure:
+    *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
+        *   `Pods/` (if using CocoaPods)
+        *   `ProjectName/`
+        *   `ProjectNameTests/`
+        *   `ProjectName.xcodeproj/`
+        *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
+
+*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
+    
+    #####MVC (Model-View-Controller):
+    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
+    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
+    *   `Storyboards/` (contains storyboard files)
+
+    #####MVVM (Model-View-ViewModel):
+    *   `UI/`
+        *   `FlowName/` (as many folders as flows in the application, they contain view controllers, view models and the storyboard file for the corresponding flow)
+
+    #####All:
+    *   `Helpers/` (contains utility classes, extensions and singletons)
+    *   `Networking/` (contains networking service and other API integration related classes)
+    *   `Models/`
+        *   `ProjectName.xcdatamodeld`
+        *   `Editable/` (Core-data Entity Categories)
+        *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
+    *   `Resources/`
+        *   `Fonts/`
+        *   `Images/` (contains some sort of internal folder structure and uses sane naming conventions and contains Images.xcassets)
+        *   `Strings/` (contains plists for localized strings)
+    *   `Base.lproj/` (if using localized strings)
+    *   `Supporting Files/` (AppDelegate, InfoPlist, ProjectName-Info.plist, ProjectName-Prefix.pch, bridging-headers)
+
+
+Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
+
 ### File Code Organization
 
  The following section refers to marks, which are Swift's version of `#pragma mark` in Objective-C to separate code. There are 2 types of marks:
@@ -980,43 +1034,15 @@ extension Wallet: Printabilty {
 }
 ```
 
--
+### Functions Code Organization
 
-### Project Code Organization
+- Endless files are usually a sign of poor respect of single responsibility principe and design. Each file should count less than 1000 lines or will trigger a warning, more than 1500 lines will trigger an error.
 
-*   The filesystem directories should be kept in sync with the Xcode file groups.
+- Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
-*   Files within groups may be kept alphabetized (case-insensitively, with groups before files).
+- The number of paths a method can have (also called [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity)) should be less than 10 (warning), must be less than 20 (error).
 
-*   An Xcode project repository should follow this structure:
-    *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
-        *   `Pods/` (if using CocoaPods)
-        *   `ProjectName/`
-        *   `ProjectNameTests/`
-        *   `ProjectName.xcodeproj/`
-        *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
-
-*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure:
-    *   `Models/`
-        *   `Editable/` (Core-data Entity Categories)
-        *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
-        *   `ProjectName.xcdatamodeld`
-    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
-    *   `Storyboards/` (contains `.storyboard`s)
-    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
-    *   `Base.lproj/` (if using localized strings)
-    *   `Shared/`
-        *   `Views/` (contains base `.xib`s and UI subclasses used throughout the app)
-        *   `Controllers/` (contains base view controllers used or subclassed throughout the app)
-        *   `Utilities/` (contains utility classes and singletons)
-    *   `Resources/`
-        *   `Fonts/`
-        *   `Images/` (contains some sort of internal folder structure and uses sane naming conventions and contains Images.xcassets)
-        *   `Strings/` (contains plists for localized strings)
-    *   `Supporting Files/` (AppDelegate, InfoPlist, ProjectName-Info.plist, ProjectName-Prefix.pch, bridging-headers)
-
-
-Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
+- The number of parameters of a method should be less than 5. If this number was to be superior, a struct type might need to be defined and used as the parameter to the method.
 
 ## Value Types vs Reference Types
 
