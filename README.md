@@ -80,6 +80,8 @@ Just note that all suggestions are open to discussion and debate! :smile:
 
 Code should be indented with tabs (as shown in the example below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. This can be changed from the default in Xcode->Preferences->Text Editing->Indentation
 
+> Custom SwiftLint rule `indentation_character` trigger warning. 
+
 It is also recommended that you disable line wrapping to further improve readability. While this is strictly a user preference, it does become helpful in our enforcement of line length as noted below.
 
 ![Xcode Indent settings](screens/indentation.png)
@@ -89,6 +91,8 @@ It is also recommended that you disable line wrapping to further improve readabi
 >* To convert existing projects to this new format, you can select all code in a file (⌘A to select all) and then apply your new settings (using ^I or Editor->Structure->Re-Indent). Unfortunately, there is no way to do this to the entire project so you'll need to do it for each file in your project.
 
 It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
+
+> SwiftLint rule `line_length` triggers warning if > 220 characters, error if > 9999 lines.
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -104,7 +108,11 @@ Vertical spaces should be used in long methods to separate its name from impleme
 
 The very first line of a document shouldn't be empty (there can be, however, an empty line between header comments and the first line of code). It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
 
+> SwiftLint rules `leading_whitespace` / `trailing_newline` trigger warning if empty lines not respected.
+
 Opening braces (`if`/`switch`/`while`/`do` etc.) should be preceded by a single space and on the same line as the declaration, or optionally on a new line if the statement is multiline. Note that `else` and `catch` statements must be on a new line after the previous declaration.
+
+> SwiftLint rules `opening_brace` / `switch_case_on_newline` might trigger warning or error if brace rules are not respected.
 
 **Preferred:**
 
@@ -246,7 +254,7 @@ When in doubt, look at how Xcode lists the method in the jump bar – our style
 
 #### Class Prefixes
 
-Swift types are automatically namespaced by the module that contains them and you should ***NOT*** add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
+- Swift types are automatically namespaced by the module that contains them and you should ***NOT*** add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
 
 ```swift
 import SomeModule
@@ -256,6 +264,10 @@ let myClass = SomeModule.UsefulClass()
 
 It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
 On the other hand developer discretion is best.
+
+- Type names should be precise, self-explanatory and of reasonable size.
+
+> SwiftLint rule `variable_name` triggers warning if > 40 characters, error if < 2 or > 100 caracters. 
 
 -
 
@@ -343,6 +355,10 @@ default:
 
 ### Control Flow
 
+- If, for, while, do statements shouldn't wrap their conditionals in parentheses.
+
+> SwiftLint rule `control_statement` triggers Warning.
+
 - Prefer the `for-in` style of `for` loop over the `for-condition-increment` style.
 
 **Preferred:**
@@ -374,8 +390,13 @@ for var i = 0; i < attendeeList.count; i++ {
 
 ### Properties
 
+- Variable names should be precise, self-explanatory and keep a reasonable length.
+
+> SwiftLint rule `variable_name` triggers warning if > 70 characters, error if > 100 characters.
 
 - If making a read-only computed variable, provide the getter without the get {} around it:
+
+> SwiftLint rule `implicit_getter` triggers warning.
 
 ```swift
 var computedProp: String {
@@ -458,7 +479,9 @@ class Circle {
 
 - Prefer using properties or methods that describe best what the code is doing. This results in more precise and self explanatory code.
 
- **Preferred:**
+> SwiftLint rule `syntactic_sugar` and `swift_generic_syntax` trigger warning.
+
+**Preferred:**
 
 ```swift
 if !valuesArray.isEmpty { ... } 
@@ -469,8 +492,6 @@ if !valuesArray.isEmpty { ... }
 ```swift
 if valuesArray.count != 0 { ... } 
 ```
-
--
 
 - Prefer the shortcut versions of type declarations (also called syntactic sugars) over the full generics syntax.
 
@@ -492,11 +513,15 @@ var faxNumber: Optional<Int>
 
 - If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
 
+> SwiftLint rule `colon` triggers warning.
+
 ```swift
 static var testVar: String
 ```
 
 - When declaring dictionary types, include a space after the colon only:
+
+> SwiftLint rule `colon` triggers warning.
 
 ```swift
 var someDictionary: [String: Int]
@@ -546,6 +571,10 @@ class Test {
 }
 ```
 
+- Nested `.self` usage shouldn't be used more than once on a given statement.
+
+> Custom SwiftLint rule `nested_self_usage` triggers warning.
+
 ### Closures
 
 - Do not use parameter types when declaring parameter names to use in a closure. Also, keep parameter names on same line as opening brace for closures:
@@ -556,7 +585,7 @@ doSomethingWithCompletion() { param1 in
 }
 ```
 
-- Always use trailing closure syntax if there is a single closure as the last parameter of a method:
+- Always use trailing closure syntax if there is a single closure as the last parameter of a method, or if a closure is the only parameter:
 
 ```swift
 // Definition
@@ -582,13 +611,9 @@ testMethod(param: 2.5,
     })
 ```
 
-- Use trailing closure syntax if a closure is the only parameter:
+- It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If this closure return type is nil and want to specify it, prefer using `Void` than `()`. Also, -> and the return type should be separated by a single space or put on a separate line:
 
-```swift
-array1.map { /* content */ }
-```
-
-- It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If declaring the type of a function or closure with no return type, specify this by using Void as the return type. Also, -> and the return type should be separated by a single space or put on a separate line:
+> SwiftLint rules `void_return`, `redundant_void_return`, `return_arrow_whitespace` and `closure_spacing` might trigger warning or error.
 
 ```swift
 func takeClosure(aClosure: () -> Void) {
@@ -725,6 +750,8 @@ func foo2() {
 
 Note: Make sure to test your documentation by checking it's Quick Documentation by option-clicking on the method name.
 
+> SwiftLint rule `valid_docs` triggers warning.
+
 ```swift
 /**
 This method has parameters and a return type.
@@ -824,6 +851,8 @@ if let user = user {
 ```
 
 Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement. If needed, you can add a line break for each optional you unwrap. 
+
+> SwiftLint rule `nesting` triggers warning.
 
 ```swift
 let name: String?
@@ -969,9 +998,9 @@ The class/struct file layout should be ordered as follows with respect to marks 
         - Section: Protocols
             - Sub-section: <Protocol Name>
 
-- When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. One extension per protocol:
+- When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. One extension per protocol. Thus Source files will look like this: 
 
-Thus Source files will look like this...
+> Custom SwiftLint rule `protocol_conformance` trigger warning.
 
 ```swift
 import MoneyKit
@@ -1036,13 +1065,21 @@ extension Wallet: Printabilty {
 
 ### Functions Code Organization
 
-- Endless files are usually a sign of poor respect of single responsibility principe and design. Each file should count less than 1000 lines or will trigger a warning, more than 1500 lines will trigger an error.
+- Endless files are usually a sign of poor respect of single responsibility principe and design. 
+
+> SwiftLint rule `file_length` triggers warning if > 1000 lines, error if > 1500 lines.
 
 - Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
+> SwiftLint rule `function_body_length` triggers warning if > 150 lines, error if > 300 lines.
+
 - The number of paths a method can have (also called [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity)) should be less than 10 (warning), must be less than 20 (error).
 
-- The number of parameters of a method should be less than 5. If this number was to be superior, a struct type might need to be defined and used as the parameter to the method.
+> SwiftLint rule `cyclomatic_complexity` triggers warning if > 10 paths, error if > 20 paths.
+
+- The number of parameters of a method shouldn't be too substantial. A struct type might need to be defined and used as the parameter to the method.
+
+> SwiftLint rule `function_parameter_count` triggers warning if > 5 parameters, error if > 8 parameters.
 
 ## Value Types vs Reference Types
 
@@ -1248,10 +1285,18 @@ You must have a single Objective-C bridging header for Object-C interoperability
 
 -
 
-# Forbidden
+# Others
 
-Types should never have prefixes because their names are already implicitly mangled and prefixed by their module name.
+- Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
 
-Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
+- Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
 
-Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
+> SwiftLint rule `trailing_semicolon` triggers Warning.
+
+- The copyright in each project’s files should be Fueled (contain `Copyright` and `Fueled` in the file comments header).
+
+> Custom SwiftLint rule `copyright` triggers warning. 
+
+- It is possible to use `TODO`, `FIXME` or `HACK` comment statements to emphasize specific lines of code. 
+
+> SwiftLint rule `todo` triggers warnings to highlight them.
