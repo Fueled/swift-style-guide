@@ -42,6 +42,8 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [Naming](#naming)
 		* [Functions and Arguments](#functions-and-arguments)
 		* [Enumerations](#enumerations)
+    * [Operators](#operators)
+        * [Operator Definitions](#Operator-definitions)
 	* [Access Control](#access-control)
 	* [Switch](#switch)
 	* [Control Flow](#control-flow)
@@ -57,7 +59,6 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [Optionals](#optionals)
 	* [Static code vs Dynamic code](#static-code-vs-dynamic-code)
 	* [Classes and Inheritance](#classes-and-inheritance)
-	* [Operator definitions](#operator-definitions)
 * [Code organization](#code-organization)
 	* [File Code Organization](#file-code-organization)
 	* [Project Code Organization](#project-code-organization)
@@ -72,7 +73,6 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [User Facing Strings](#User-Facing-Strings)
 	* [Objective-C Interoperability](Objective-C-Interoperability)
 * [Others](#Others)
-
 	
 ## Xcode Preferences
 
@@ -92,7 +92,7 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
 
-> ⚠️ Warning > 220 characters, 🚫 Error > 9999 characters (SwiftLint Standard rule `line_length`)
+> ⚠️ > 220 characters, 🚫 > 9999 characters (SwiftLint Standard rule `line_length`)
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -234,24 +234,6 @@ enum Shape {
 ```
 -
 
-#### Method Names in Documentation
-
-When referring to functions in prose (tutorials, books, comments) include the required parameter names from the caller's perspective or `_` for unnamed parameters.
-
-> Call `convertPointAt(column:row:)` from your own `init` implementation.
->
-> If you call `dateFromString(_:)` make sure that you provide a string with the format "yyyy-MM-dd".
->
-> If you call `timedAction(delay:perform:)` from `viewDidLoad()` remember to provide an adjusted delay value and an action to perform.
->
-> You shouldn't call the data source method `tableView(_:cellForRowAtIndexPath:)` directly.
-
-When in doubt, look at how Xcode lists the method in the jump bar – our style here matches that.
-
-![Methods in Xcode jump bar](screens/xcode-jump-bar.png)
-
--
-
 #### Class Prefixes
 
 - Swift types are automatically namespaced by the module that contains them and you should ***NOT*** add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
@@ -267,14 +249,65 @@ On the other hand developer discretion is best.
 
 - Type names should be precise, self-explanatory and of reasonable size.
 
-> ⚠️ Warning > 40 characters, 🚫 Error < 2 or > 100 caracters (SwiftLint Standard rule `variable_name`)
+> ⚠️ > 40 characters, 🚫 < 2 or > 100 caracters (SwiftLint Standard rule `variable_name`)
 
 -
 
+### Operators
+
+- Prefer shorthand operators (+=, -=, *=, /=) over doing the operation and assigning:
+
+> ⚠️ Warning (SwiftLint Standard rule `shorthand_operator`) 
+
+**Preferred:**
+
+```swift
+wHeightPct += 0.85
+```
+
+**Not Preferred:**
+    
+```swift
+wHeightPct = wHeightPct + 0.85
+```
+
+- Prefer `!= nil` over `let _ =`:
+
+> ⚠️ Warning (SwiftLint Standard rule `unused_optional_binding`) 
+
+**Preferred:**
+
+```swift
+if optionalValue != nil
+```
+
+**Not Preferred:**
+    
+```swift
+if let _ = optionalValue { … }
+```
+
+#### Operator definitions
+
+- Use whitespace around operators when defining them. Instead of:
+
+```swift
+func <|(lhs: Int, rhs: Int) -> Int
+func <|<<A>(lhs: A, rhs: A) -> A
+```
+
+write:
+
+```swift
+func <| (lhs: Int, rhs: Int) -> Int
+func <|< <A>(lhs: A, rhs: A) -> A
+```
+
+_Rationale:_ Operators consist of punctuation characters, which can make them difficult to read when immediately followed by the punctuation for a type or value parameter list. Adding whitespace separates the two more clearly.
+
 ### Access Control
 
-Always specify access control explicitly for top-level definitions
--Top-level functions, types, and variables should always have explicit access control specifiers:
+- Always specify access control explicitly for top-level definitions. Top-level functions, types, and variables should always have explicit access control specifiers:
 
 ```swift
 public var whoopsGlobalState: Int
@@ -282,7 +315,7 @@ internal struct TheFez {}
 private func doTheThings(things: [Thing]) {}
 ```
 
-However, definitions within those can leave access control implicit, where appropriate:
+- However, definitions within those can leave access control implicit, where appropriate:
 > Don't add modifiers (like `internal`) except on top level, if they're already the default. Similarly, don't repeat the access modifier when overriding a method.
 
 ```swift
@@ -294,7 +327,30 @@ internal struct TheFez {
 }
 ```
 
-Authors should use `private` when possible and only `fileprivate` when it is required for improved encapsulation. For example when it is used by an extension in the same file. `private` and `fileprivate` mean the same thing at file scope, and in this case you should prefer `private`.
+- Don't separate your class implementation in as many extensions as different access control levels you need:
+
+**Preferred:**
+
+```swift
+struct iAmAStruct {
+    func doSomething { … } // public
+    private func doSomethingPrivate { … } // private
+}
+```
+
+**Not Preferred:**
+
+```swift
+struct iAmAStruct {
+    func doSomething { … } // public
+}
+
+private extension iAmAStruct {
+    func doSomethingPrivate { … } // private
+}
+```
+
+- Authors should use `private` when possible and only `fileprivate` when it is required for improved encapsulation. For example when it is used by an extension in the same file. `private` and `fileprivate` mean the same thing at file scope, and in this case you should prefer `private`.
 
 _Rationale:_ It's rarely appropriate for top-level definitions to be specifically `internal`, and being explicit ensures that careful thought goes into that decision. Within a definition, reusing the same access control specifier is just duplicative, and the default is usually reasonable.
 
@@ -359,31 +415,32 @@ default:
 
 > ⚠️ Warning (SwiftLint Standard rule `control_statement`) 
 
-- Prefer the `for-in` style of `for` loop over the `for-condition-increment` style.
-
 **Preferred:**
 
 ```swift
-for _ in 0..<3 {
-    println("Hello three times")
-}
-
-for (index, person) in enumerate(attendeeList) {
-    println("\(person) is at position #\(index)")
-}
+if carSpeed > 45.5 { … }
 ```
 
 **Not Preferred:**
 
 ```swift
-for var i = 0; i < 3; i++ {
-    println("Hello three times")
-}
+if (carSpeed > 45.5) { … }
+```
 
-for var i = 0; i < attendeeList.count; i++ {
-    let person = attendeeList[i]
-    println("\(person) is at position #\(i)")
-}
+- In for loops, when the index is not used, .enumerated() can be removed.
+
+> ⚠️ Warning (SwiftLint Standard rule `unused_enumerated`) 
+
+**Preferred:**
+
+```swift
+for (_, foo) in bar { … }
+```
+
+**Not Preferred:**
+
+```swift
+for (_, foo) in bar.enumerated() { … }
 ```
 
 -
@@ -392,7 +449,7 @@ for var i = 0; i < attendeeList.count; i++ {
 
 - Variable names should be precise, self-explanatory and keep a reasonable length.
 
-> ⚠️ Warning > 70 characters, 🚫 Error > 100 characters (SwiftLint Standard rule `variable_name`)
+> ⚠️ > 70 characters, 🚫 > 100 characters (SwiftLint Standard rule `variable_name`)
 
 - If making a read-only computed variable, provide the getter without the get {} around it:
 
@@ -527,6 +584,12 @@ static var testVar: String
 var someDictionary: [String: Int]
 ```
 
+- Trailing commas in arrays and dictionaries should be enforced:
+
+> **Rationale:** helps to reduce spurious diffs when elements are added or removed (reference [https://lists.swift.org/pipermail/swift-evolution-announce/2016-May/000171.html](here)).
+
+> ⚠️ Warning (SwiftLint Standard rule `trailing_comma`) 
+
 - Names of types and protocols are UpperCamelCase. Everything else is lowerCamelCaseWhen, e.g. when declaring a constant:
 
 ```swift
@@ -534,7 +597,38 @@ class TestClass {
     let constantValue = 3
 }
 ```
+
+- IBOutlets should be private to avoid leaking UIKit to higher layers:
+
+> ⚠️ Warning (SwiftLint Standard rule `private_outlet`) 
+
+**Preferred:**
+
+```swift
+@IBOutlet private var label: UILabel? 
+@IBOutlet private(set) var label: UILabel? 
+```
+
+**Not Preferred:**
+
+```swift
+@IBOutlet var label: UILabel?
+```
+
+- Properties declared as `IBInspectable` must be of a supported Interface Builder type to avoid runtime crashes. Note that there is no need to specify the decimal part of a `CGFloat` if none:
 	
+**Preferred:**
+
+```swift
+@IBInspectable var length: CGFloat = 5
+```
+
+**Not Preferred:**
+
+```swift
+@IBInspectable var length: CGFloat? = 5.0 
+```
+
 #### Identifiers
 	
 - To declare a set of constants not to be used for switching, use a struct:
@@ -577,10 +671,12 @@ class Test {
 
 ### Closures
 
-- Do not use parameter types when declaring parameter names to use in a closure. Also, keep parameter names on same line as opening brace for closures:
+- Do not use parameter types when declaring parameter names to use in a closure, unless imposed by the compiler. Unused parameters should be replaced by `_`. Also, keep parameter names on same line as opening brace for closures:
+
+> ⚠️ Warning (SwiftLint Standard rule `unused_closure_parameter`) 
 
 ```swift
-doSomethingWithCompletion() { param1 in
+doSomethingWithCompletion() { param1, _ in
     println("\(param1)")
 }
 ```
@@ -595,6 +691,17 @@ func newMethod(input: Int, onComplete methodToRun: (input: Int) -> Void) {
 
 // Usage
 newMethod(10) { param in
+    println("output: \(param)"")
+}
+```
+
+- If a closure is the only parameter, you must use trailing closure syntax and avoid the empty parenthesis:
+
+> ⚠️ Warning (SwiftLint Standard rule `empty_parentheses_with_trailing_closure`) 
+
+```swift
+// Usage
+newMethod { param in
     println("output: \(param)"")
 }
 ```
@@ -693,6 +800,7 @@ newString += " world!"
 -
 
 ### Enums
+
 - When using an enum, always prefer the shorthand syntax when possible. The shorthand syntax should be possible whenever the type does not need to be inferred from the assigned value. Note: there are certain bugs that don't allow them to be used everywhere they should be possible.
 
 ```swift
@@ -715,6 +823,17 @@ if shouldBeA {
 
 ```swift
 var testValue: TestEnum = .a
+```
+
+- String enum values can be omitted when they are equal to the enumcase name:
+
+> ⚠️ Warning (SwiftLint Standard rule `redundant_string_enum_value`) 
+
+```swift
+enum Numbers: String {
+    case one = "one" // no need to declare the if equal to enumeration member name
+    case two 
+}
 ```
 
 -
@@ -893,27 +1012,41 @@ On the other hand, dynamic code's control flow is resolved at run-time, which me
 
 ### Classes and Inheritance
 
-Classes should start as `final`, and only be changed to allow subclassing if a valid need for inheritance has been identified. Even in that case, as many definitions as possible _within_ the class should be `final` as well, following the same rules.
+- Classes should start as `final`, and only be changed to allow subclassing if a valid need for inheritance has been identified. Even in that case, as many definitions as possible _within_ the class should be `final` as well, following the same rules.
 
 _Rationale:_ Composition is usually preferable to inheritance, and opting _in_ to inheritance hopefully means that more thought will be put into the decision.
 
-### Operator definitions
+- Some overridden methods should always call super. Similarly, some other methods should never call super. 
 
-- Use whitespace around operators when defining them. Instead of:
+> **Note**: the SwiftLint rule only checks for specific and often used overrides, it is not a general rule in either cases. Exceptions and custom methods can be added.
 
-```swift
-func <|(lhs: Int, rhs: Int) -> Int
-func <|<<A>(lhs: A, rhs: A) -> A
-```
+> ⚠️ Warning (SwiftLint Standard rules `overridden_super_call` and `overridden_super_call`) 
 
-write:
+**Preferred:**
 
 ```swift
-func <| (lhs: Int, rhs: Int) -> Int
-func <|< <A>(lhs: A, rhs: A) -> A
+override func viewDidLoad() {
+   super.viewDidLoad()
+   // code
+}
+
+override func loadView() {
+   // code
+}
 ```
 
-_Rationale:_ Operators consist of punctuation characters, which can make them difficult to read when immediately followed by the punctuation for a type or value parameter list. Adding whitespace separates the two more clearly.
+**Not Preferred:**
+    
+```swift
+override func viewDidLoad() {
+   // code
+}
+
+override func loadView() {
+    super.loadView()
+   // code
+}
+```
 
 ## Code organization
 
@@ -1066,19 +1199,11 @@ extension Wallet: Printabilty {
 
 - Endless files are usually a sign of poor respect of single responsibility principe and design. 
 
-> ⚠️ Warning > 1000 lines, 🚫 Error > 1500 lines (SwiftLint Standard rule `file_length`)
+> ⚠️ > 1000 lines, 🚫 > 1500 lines (SwiftLint Standard rule `file_length`)
 
 - Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
-> ⚠️ Warning > 150 lines, 🚫 Error > 300 lines (SwiftLint Standard rule `function_body_length`)
-
-- The number of paths a method can have (also called [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity)) should be less than 10 (warning), must be less than 20 (error).
-
-> ⚠️ Warning > 10 paths, 🚫 Error > 20 paths (SwiftLint Standard rule `cyclomatic_complexity`)
-
-- The number of parameters of a method shouldn't be too substantial. A struct type might need to be defined and used as the parameter to the method.
-
-> ⚠️ Warning > 5 parameters, 🚫 Error > 8 parameters (SwiftLint Standard rule `function_parameter_count`)
+> ⚠️ > 150 lines, 🚫 > 300 lines (SwiftLint Standard rule `function_body_length`)
 
 ## Value Types vs Reference Types
 
@@ -1137,13 +1262,21 @@ class Triangle: Polygon {
 
 ### Protocols
 
-The ReusableView Protocol should be used by any view used by a UICollectionViewCell or UITableViewCell that needs a reuse identifier.
+- The ReusableView Protocol should be used by any view used by a UICollectionViewCell or UITableViewCell that needs a reuse identifier.
 
 ```swift
 protocol ReusableCell {
     static var reuseIdentifier: String { get }
     static var nibName: String { get }
 }
+```
+
+- Delegates must be declared weak in order to avoid reference cycles:
+
+> ⚠️ Warning (SwiftLint Standard rule `weak_delegate`) 
+
+```swift
+weak var delegate: OneDelegate?
 ```
 
 #### UITableViewCell & UICollectionViewCell
@@ -1291,12 +1424,6 @@ You must have a single Objective-C bridging header for Object-C interoperability
 - Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
 
 > ⚠️ Warning (SwiftLint Standard rule `trailing_semicolon`) 
-
-- The copyright in each project’s files should be Fueled (contain `Copyright` and `Fueled` in the file comments header).
-
-> ⚠️ Warning (SwiftLint Custom rule `copyright`) 
-
-> Custom SwiftLint rule `copyright` triggers warning. 
 
 - It is possible to use `TODO`, `FIXME` or `HACK` comment statements to emphasize specific lines of code. 
 
