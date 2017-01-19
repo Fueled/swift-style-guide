@@ -71,7 +71,7 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [Core Foundation](#Core-Foundation)
 	* [User Facing Strings](#User-Facing-Strings)
 	* [Objective-C Interoperability](Objective-C-Interoperability)
-* [Forbidden](#forbidden)
+* [Others](#Others)
 
 	
 ## Xcode Preferences
@@ -80,7 +80,7 @@ Just note that all suggestions are open to discussion and debate! :smile:
 
 Code should be indented with tabs (as shown in the example below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. This can be changed from the default in Xcode->Preferences->Text Editing->Indentation
 
-> Custom SwiftLint rule `indentation_character` trigger warning. 
+> ⚠️ Warning (SwiftLint Custom rule `indentation_character`) 
 
 It is also recommended that you disable line wrapping to further improve readability. While this is strictly a user preference, it does become helpful in our enforcement of line length as noted below.
 
@@ -92,7 +92,7 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
 
-> SwiftLint rule `line_length` triggers warning if > 220 characters, error if > 9999 lines.
+> ⚠️ Warning > 220 characters, 🚫 Error > 9999 characters (SwiftLint Standard rule `line_length`)
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -108,11 +108,11 @@ Vertical spaces should be used in long methods to separate its name from impleme
 
 The very first line of a document shouldn't be empty (there can be, however, an empty line between header comments and the first line of code). It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
 
-> SwiftLint rules `leading_whitespace` / `trailing_newline` trigger warning if empty lines not respected.
+> ⚠️ Warning (SwiftLint Standard rules `leading_whitespace` and `trailing_newline`) 
 
 Opening braces (`if`/`switch`/`while`/`do` etc.) should be preceded by a single space and on the same line as the declaration, or optionally on a new line if the statement is multiline. Note that `else` and `catch` statements must be on a new line after the previous declaration.
 
-> SwiftLint rules `opening_brace` / `switch_case_on_newline` might trigger warning or error if brace rules are not respected.
+> ⚠️ Warning (SwiftLint Standard rules `opening_brace` and `switch_case_on_newline`) 
 
 **Preferred:**
 
@@ -267,7 +267,7 @@ On the other hand developer discretion is best.
 
 - Type names should be precise, self-explanatory and of reasonable size.
 
-> SwiftLint rule `variable_name` triggers warning if > 40 characters, error if < 2 or > 100 caracters. 
+> ⚠️ Warning > 40 characters, 🚫 Error < 2 or > 100 caracters (SwiftLint Standard rule `variable_name`)
 
 -
 
@@ -357,7 +357,7 @@ default:
 
 - If, for, while, do statements shouldn't wrap their conditionals in parentheses.
 
-> SwiftLint rule `control_statement` triggers Warning.
+> ⚠️ Warning (SwiftLint Standard rule `control_statement`) 
 
 - Prefer the `for-in` style of `for` loop over the `for-condition-increment` style.
 
@@ -392,11 +392,11 @@ for var i = 0; i < attendeeList.count; i++ {
 
 - Variable names should be precise, self-explanatory and keep a reasonable length.
 
-> SwiftLint rule `variable_name` triggers warning if > 70 characters, error if > 100 characters.
+> ⚠️ Warning > 70 characters, 🚫 Error > 100 characters (SwiftLint Standard rule `variable_name`)
 
 - If making a read-only computed variable, provide the getter without the get {} around it:
 
-> SwiftLint rule `implicit_getter` triggers warning.
+> ⚠️ Warning (SwiftLint Standard rule `implicit_getter`) 
 
 ```swift
 var computedProp: String {
@@ -479,7 +479,7 @@ class Circle {
 
 - Prefer using properties or methods that describe best what the code is doing. This results in more precise and self explanatory code.
 
-> SwiftLint rule `syntactic_sugar` and `swift_generic_syntax` trigger warning.
+> ⚠️ Warning (SwiftLint Standard rules `syntactic_sugar` and `swift_generic_syntax`) 
 
 **Preferred:**
 
@@ -513,7 +513,7 @@ var faxNumber: Optional<Int>
 
 - If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
 
-> SwiftLint rule `colon` triggers warning.
+> ⚠️ Warning (SwiftLint Standard rule `colon`) 
 
 ```swift
 static var testVar: String
@@ -521,7 +521,7 @@ static var testVar: String
 
 - When declaring dictionary types, include a space after the colon only:
 
-> SwiftLint rule `colon` triggers warning.
+> ⚠️ Warning (SwiftLint Standard rule `colon`)
 
 ```swift
 var someDictionary: [String: Int]
@@ -573,7 +573,7 @@ class Test {
 
 - Nested `.self` usage shouldn't be used more than once on a given statement.
 
-> Custom SwiftLint rule `nested_self_usage` triggers warning.
+> ⚠️ Warning (SwiftLint Custom rule `nested_self_usage`) 
 
 ### Closures
 
@@ -613,7 +613,7 @@ testMethod(param: 2.5,
 
 - It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If this closure return type is nil and want to specify it, prefer using `Void` than `()`. Also, -> and the return type should be separated by a single space or put on a separate line:
 
-> SwiftLint rules `void_return`, `redundant_void_return`, `return_arrow_whitespace` and `closure_spacing` might trigger warning or error.
+> ⚠️ Warning (SwiftLint Standard rules `void_return`, `redundant_void_return`, `return_arrow_whitespace` and `closure_spacing`) 
 
 ```swift
 func takeClosure(aClosure: () -> Void) {
@@ -750,7 +750,7 @@ func foo2() {
 
 Note: Make sure to test your documentation by checking it's Quick Documentation by option-clicking on the method name.
 
-> SwiftLint rule `valid_docs` triggers warning.
+> ⚠️ Warning (SwiftLint Standard rule `valid_docs`) 
 
 ```swift
 /**
@@ -779,7 +779,6 @@ let name = "John Appleseed"
 let planets = [.mars, .saturn]
 let colors = ["red": 0xff0000, "green": 0x00ff00]
 ```
-	
 
 **Not Preferred:**
 
@@ -852,7 +851,7 @@ if let user = user {
 
 Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement. If needed, you can add a line break for each optional you unwrap. 
 
-> SwiftLint rule `nesting` triggers warning.
+> ⚠️ Warning (SwiftLint Standard rule `nesting`) 
 
 ```swift
 let name: String?
@@ -1000,7 +999,7 @@ The class/struct file layout should be ordered as follows with respect to marks 
 
 - When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. One extension per protocol. Thus Source files will look like this: 
 
-> Custom SwiftLint rule `protocol_conformance` trigger warning.
+> ⚠️ Warning (SwiftLint Custom rule `protocol_conformance`) 
 
 ```swift
 import MoneyKit
@@ -1067,19 +1066,19 @@ extension Wallet: Printabilty {
 
 - Endless files are usually a sign of poor respect of single responsibility principe and design. 
 
-> SwiftLint rule `file_length` triggers warning if > 1000 lines, error if > 1500 lines.
+> ⚠️ Warning > 1000 lines, 🚫 Error > 1500 lines (SwiftLint Standard rule `file_length`)
 
 - Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
-> SwiftLint rule `function_body_length` triggers warning if > 150 lines, error if > 300 lines.
+> ⚠️ Warning > 150 lines, 🚫 Error > 300 lines (SwiftLint Standard rule `function_body_length`)
 
 - The number of paths a method can have (also called [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity)) should be less than 10 (warning), must be less than 20 (error).
 
-> SwiftLint rule `cyclomatic_complexity` triggers warning if > 10 paths, error if > 20 paths.
+> ⚠️ Warning > 10 paths, 🚫 Error > 20 paths (SwiftLint Standard rule `cyclomatic_complexity`)
 
 - The number of parameters of a method shouldn't be too substantial. A struct type might need to be defined and used as the parameter to the method.
 
-> SwiftLint rule `function_parameter_count` triggers warning if > 5 parameters, error if > 8 parameters.
+> ⚠️ Warning > 5 parameters, 🚫 Error > 8 parameters (SwiftLint Standard rule `function_parameter_count`)
 
 ## Value Types vs Reference Types
 
@@ -1291,12 +1290,14 @@ You must have a single Objective-C bridging header for Object-C interoperability
 
 - Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
 
-> SwiftLint rule `trailing_semicolon` triggers Warning.
+> ⚠️ Warning (SwiftLint Standard rule `trailing_semicolon`) 
 
 - The copyright in each project’s files should be Fueled (contain `Copyright` and `Fueled` in the file comments header).
+
+> ⚠️ Warning (SwiftLint Custom rule `copyright`) 
 
 > Custom SwiftLint rule `copyright` triggers warning. 
 
 - It is possible to use `TODO`, `FIXME` or `HACK` comment statements to emphasize specific lines of code. 
 
-> SwiftLint rule `todo` triggers warnings to highlight them.
+> ⚠️ Warning (SwiftLint Standard rule `todo`) 
