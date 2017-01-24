@@ -8,6 +8,7 @@ This guide is based on the following sources:
 - [Ray Wenderlich Swift style guide](https://github.com/raywenderlich/swift-style-guide)
 - [SlideShare Swift style guide](https://github.com/SlideShareInc/swift-style-guide)
 - [Netguru Swift style guide](https://github.com/netguru/swift-style-guide)
+- [Naming Things in Swift](https://ashfurrow.com/blog/naming-things-in-swift)
 
 ### Purpose of the style guide
 
@@ -21,7 +22,7 @@ rough priority order):
  1. Reduced verbosity
  1. Fewer debates about aesthetics
 
-This guide has been written for Swift 3.
+Remember: code is written only once, but is read over and over, so programmers should optimize for ease of reading and not ease of writing. This guide has been written for Swift 3.
 
 ### Contribution
 
