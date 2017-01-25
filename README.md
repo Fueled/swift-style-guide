@@ -22,7 +22,7 @@ rough priority order):
  1. Reduced verbosity
  1. Fewer debates about aesthetics
 
-Remember: code is written only once, but is read over and over, so programmers should optimize for ease of reading and not ease of writing. This guide has been written for Swift 3.
+Remember: code is written only once, but is read over and over, so programmers should prioritize optimizations for ease of reading over ease of writing. This guide has been written for Swift 3.
 
 ### Contribution
 
@@ -250,7 +250,7 @@ On the other hand developer discretion is best.
 
 - Type names should be precise, self-explanatory and of reasonable size.
 
-> ⚠️ > 40 characters, 🚫 < 2 or > 100 caracters (SwiftLint Standard rule `variable_name`)
+> ⚠️ > 40 characters, 🚫 < 2 or > 100 characters (SwiftLint Standard rule `variable_name`)
 
 -
 
@@ -272,7 +272,7 @@ wHeightPct += 0.85
 wHeightPct = wHeightPct + 0.85
 ```
 
-- Prefer `!= nil` over `let _ =`:
+- Prefer `!= nil` over `let _ =`. Note that sometimes, it might make more sense to use `guard` statement. Ideal if you need to escape a method when the condition is not satisfied at the beginning of its body for instance (e.g. testing preconditions).
 
 > ⚠️ Warning (SwiftLint Standard rule `unused_optional_binding`) 
 
@@ -1198,7 +1198,7 @@ extension Wallet: Printabilty {
 
 ### Functions Code Organization
 
-- Endless files are usually a sign of poor respect of single responsibility principe and design. 
+- Endless files are usually a sign of poor respect of single responsibility principle and design. 
 
 > ⚠️ > 1000 lines, 🚫 > 1500 lines (SwiftLint Standard rule `file_length`)
 
@@ -1426,6 +1426,6 @@ You must have a single Objective-C bridging header for Object-C interoperability
 
 > ⚠️ Warning (SwiftLint Standard rule `trailing_semicolon`) 
 
-- It is possible to use `TODO`, `FIXME` or `HACK` comment statements to emphasize specific lines of code. 
+- It is recommended to use `TODO`, `FIXME` or `HACK` comment statements to intentionally generate a warning, as a reminder of specific lines/blocks of code that need to be addressed before the code is release-ready.
 
 > ⚠️ Warning (SwiftLint Standard rule `todo`) 
