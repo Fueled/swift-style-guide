@@ -1059,11 +1059,11 @@ override func loadView() {
 
 *   An Xcode project repository should follow this structure:
     *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
-        *   `Pods/` (if using CocoaPods)
         *   `ProjectName/`
-        *   `ProjectNameTests/`
         *   `ProjectName.xcodeproj/`
         *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
+        *   `ProjectNameTests/`
+        *   `Pods/` (if using CocoaPods)
 
 *   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
     
