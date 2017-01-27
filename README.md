@@ -61,8 +61,9 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [Static code vs Dynamic code](#static-code-vs-dynamic-code)
 	* [Classes and Inheritance](#classes-and-inheritance)
 * [Code organization](#code-organization)
+    * [Project Code Organization](#project-code-organization)
 	* [File Code Organization](#file-code-organization)
-	* [Project Code Organization](#project-code-organization)
+    * [Functions Code Organization](#functions-code-organization)
 * [Value Types vs Reference Types](#value-types-vs-reference-types)
 * [Cocoa Specific Guides](#cocoa-specific-guides)
 	* [Protocols](#protocols)
@@ -428,6 +429,24 @@ if carSpeed > 45.5 { … }
 if (carSpeed > 45.5) { … }
 ```
 
+- If and guard statements should not be declared in one line only.
+
+> 🚫 Error (SwiftLint Custom rule to define) 
+
+**Preferred:**
+
+```swift
+guard let variable = variable else {
+    return
+}
+```
+
+**Not Preferred:**
+
+```swift
+guard let variable = variable else { ... }
+```
+
 - In for loops, when the index is not used, .enumerated() can be removed.
 
 > ⚠️ Warning (SwiftLint Standard rule `unused_enumerated`) 
@@ -584,12 +603,6 @@ static var testVar: String
 ```swift
 var someDictionary: [String: Int]
 ```
-
-- Trailing commas in arrays and dictionaries should be enforced:
-
-> **Rationale:** helps to reduce spurious diffs when elements are added or removed (reference [https://lists.swift.org/pipermail/swift-evolution-announce/2016-May/000171.html](here)).
-
-> ⚠️ Warning (SwiftLint Standard rule `trailing_comma`) 
 
 - Names of types and protocols are UpperCamelCase. Everything else is lowerCamelCaseWhen, e.g. when declaring a constant:
 
@@ -1053,11 +1066,11 @@ override func loadView() {
 
 ### Project Code Organization
 
-*   The filesystem directories should be kept in sync with the Xcode file groups.
+- The filesystem directories should be kept in sync with the Xcode file groups.
 
-*   Files within groups may be kept alphabetized (case-insensitively, with groups before files).
+- Files within groups may be kept alphabetized (case-insensitively, with groups before files).
 
-*   An Xcode project repository should follow this structure:
+- An Xcode project repository should follow this structure:
     *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
         *   `ProjectName/`
         *   `ProjectName.xcodeproj/`
@@ -1065,7 +1078,7 @@ override func loadView() {
         *   `ProjectNameTests/`
         *   `Pods/` (if using CocoaPods)
 
-*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
+- There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
     
     #####MVC (Model-View-Controller):
     *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
@@ -1092,6 +1105,42 @@ override func loadView() {
 
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
+
+- The files should be clear, nice to read and "airy" with consistency. There shouldn't be two or more consecutive line breaks. The shouldn't be any line break before the first / adter the last line of a type / method body.
+
+> ⚠️ Warning (SwiftLint Custom rule to be defined) 
+
+**Preferred:**
+
+```swift
+class Polygon {
+    let numberOfSides: Int
+
+    init() {
+        super.init(numberOfSides: 3)
+        self.doSomething()
+        self.numberOfSides = 5
+    }
+}
+```
+
+**Not Preferred:**
+    
+```swift
+class Polygon {
+
+    let numberOfSides: Int
+
+    init() {
+
+        super.init(numberOfSides: 3)
+        self.doSomething()
+        self.numberOfSides = 5    
+
+    }
+
+}
+```
 
 ### File Code Organization
 
