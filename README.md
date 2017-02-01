@@ -94,7 +94,7 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
 
-> ⚠️ > 220 characters, 🚫 > 9999 characters (SwiftLint Standard rule `line_length`)
+> ⚠️ > 220 characters (SwiftLint Standard rule `line_length`)
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -209,14 +209,17 @@ func reticulate(splines splines: [Double]) -> Bool {
 }
 ```
 
-For functions with long signatures, add line breaks at appropriate points 
-and add an extra indent on subsequent lines:
+For functions with long signatures, add line breaks at as many points as you think appropriate. This can ossibly be before first parameter, between other parameters, before return type and before opening brace. Don't forget to add an extra indent on subsequent lines if needed. It can for example look like the following:
 
 ```swift
-func reticulate(splines splines: [Double], adjustmentFactor: Double,
-    translateConstant: Int, comment: String) -> Bool {
-        // reticulate code goes here
-        return isSomeStuff
+func reticulate(splines splines: [Double], 
+                adjustmentFactor: Double,
+                translateConstant: Int, 
+                comment: String) 
+                -> Bool 
+{
+                // reticulate code goes here
+                return isSomeStuff
 }
 ```
 
@@ -685,9 +688,7 @@ class Test {
 
 ### Closures
 
-- Do not use parameter types when declaring parameter names to use in a closure, unless imposed by the compiler. Unused parameters should be replaced by `_`. Also, keep parameter names on same line as opening brace for closures:
-
-> ⚠️ Warning (SwiftLint Standard rule `unused_closure_parameter`) 
+- Prefer not to declare closure parameters type / return type, unless it really improves clarity or if imposed by the compiler. Also, keep parameter names on same line as opening brace:
 
 ```swift
 doSomethingWithCompletion() { param1, _ in
@@ -1106,11 +1107,11 @@ override func loadView() {
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
 
-- The files should be clear, nice to read and "airy" with consistency. There shouldn't be two or more consecutive line breaks. The shouldn't be any line break before the first / adter the last line of a type / method body.
+- The files should be clear and pleasant to read, without abusing neither line breaks nor spaces use. It can be decided to make the code "airy" (line break before the first / adter the last line of a type / method body); at the only condition to keep this decision consistent throughout the codebase.
 
-> ⚠️ Warning (SwiftLint Custom rule to be defined) 
+> 🚫 >= 2 consecutive line breaks (SwiftLint Custom rule `consecutive_new_lines`)
 
-**Preferred:**
+**Regular Code:**
 
 ```swift
 class Polygon {
@@ -1124,7 +1125,7 @@ class Polygon {
 }
 ```
 
-**Not Preferred:**
+**Airy Code:**
     
 ```swift
 class Polygon {
@@ -1249,7 +1250,7 @@ extension Wallet: Printabilty {
 
 - Endless files are usually a sign of poor respect of single responsibility principle and design. 
 
-> ⚠️ > 1000 lines, 🚫 > 1500 lines (SwiftLint Standard rule `file_length`)
+> ⚠️ > 1000 lines (SwiftLint Standard rule `file_length`)
 
 - Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
