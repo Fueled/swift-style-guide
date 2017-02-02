@@ -61,8 +61,9 @@ Just note that all suggestions are open to discussion and debate! :smile:
 	* [Static code vs Dynamic code](#static-code-vs-dynamic-code)
 	* [Classes and Inheritance](#classes-and-inheritance)
 * [Code organization](#code-organization)
+    * [Project Code Organization](#project-code-organization)
 	* [File Code Organization](#file-code-organization)
-	* [Project Code Organization](#project-code-organization)
+    * [Functions Code Organization](#functions-code-organization)
 * [Value Types vs Reference Types](#value-types-vs-reference-types)
 * [Cocoa Specific Guides](#cocoa-specific-guides)
 	* [Protocols](#protocols)
@@ -93,7 +94,7 @@ It is also recommended that you disable line wrapping to further improve readabi
 
 It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
 
-> ⚠️ > 220 characters, 🚫 > 9999 characters (SwiftLint Standard rule `line_length`)
+> ⚠️ > 220 characters (SwiftLint Standard rule `line_length`)
 
 You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
 
@@ -208,14 +209,17 @@ func reticulate(splines splines: [Double]) -> Bool {
 }
 ```
 
-For functions with long signatures, add line breaks at appropriate points 
-and add an extra indent on subsequent lines:
+For functions with especially long signatures, consider breaking each parameter onto its own line. Don't forget to add an extra indent on subsequent lines if needed. This also means that the closing brace should then also stand on its own line to clarify the visual separation between the function signature and function body that follows. It should look similar to the following:
 
 ```swift
-func reticulate(splines splines: [Double], adjustmentFactor: Double,
-    translateConstant: Int, comment: String) -> Bool {
-        // reticulate code goes here
-        return isSomeStuff
+func reticulate(splines splines: [Double], 
+                adjustmentFactor: Double,
+                translateConstant: Int, 
+                comment: String) 
+                -> Bool 
+{
+                // reticulate code goes here
+                return isSomeStuff
 }
 ```
 
@@ -419,13 +423,37 @@ default:
 **Preferred:**
 
 ```swift
-if carSpeed > 45.5 { … }
+if carSpeed > 45.5 { 
+    … 
+}
 ```
 
 **Not Preferred:**
 
 ```swift
-if (carSpeed > 45.5) { … }
+if (carSpeed > 45.5) { 
+    … 
+}
+```
+
+- If and guard statements should not be declared in one line only, even if they contain only one instruction. 
+
+_Rationale:_ Emphasize the content of the `else` condition and make it easier to debug, keep the style consistent with other control flow statements always declared multi-line (e.g. if, for, etc.) including guard statements themselves when they contain more than one line. 
+
+> 🚫 Error (SwiftLint Custom rule to define) 
+
+**Preferred:**
+
+```swift
+guard let variable = variable else {
+    return
+}
+```
+
+**Not Preferred:**
+
+```swift
+guard let variable = variable else { return }
 ```
 
 - In for loops, when the index is not used, .enumerated() can be removed.
@@ -585,12 +613,6 @@ static var testVar: String
 var someDictionary: [String: Int]
 ```
 
-- Trailing commas in arrays and dictionaries should be enforced:
-
-> **Rationale:** helps to reduce spurious diffs when elements are added or removed (reference [https://lists.swift.org/pipermail/swift-evolution-announce/2016-May/000171.html](here)).
-
-> ⚠️ Warning (SwiftLint Standard rule `trailing_comma`) 
-
 - Names of types and protocols are UpperCamelCase. Everything else is lowerCamelCaseWhen, e.g. when declaring a constant:
 
 ```swift
@@ -672,9 +694,7 @@ class Test {
 
 ### Closures
 
-- Do not use parameter types when declaring parameter names to use in a closure, unless imposed by the compiler. Unused parameters should be replaced by `_`. Also, keep parameter names on same line as opening brace for closures:
-
-> ⚠️ Warning (SwiftLint Standard rule `unused_closure_parameter`) 
+- Prefer not to declare closure parameters type / return type, unless it really improves clarity or if imposed by the compiler. Also, keep parameter names on same line as opening brace:
 
 ```swift
 doSomethingWithCompletion() { param1, _ in
@@ -1053,19 +1073,19 @@ override func loadView() {
 
 ### Project Code Organization
 
-*   The filesystem directories should be kept in sync with the Xcode file groups.
+- The filesystem directories should be kept in sync with the Xcode file groups.
 
-*   Files within groups may be kept alphabetized (case-insensitively, with groups before files).
+- Files within groups may be kept alphabetized (case-insensitively, with groups before files).
 
-*   An Xcode project repository should follow this structure:
+- An Xcode project repository should follow this structure:
     *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
-        *   `Pods/` (if using CocoaPods)
         *   `ProjectName/`
-        *   `ProjectNameTests/`
         *   `ProjectName.xcodeproj/`
         *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
+        *   `ProjectNameTests/`
+        *   `Pods/` (if using CocoaPods)
 
-*   There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
+- There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
     
     #####MVC (Model-View-Controller):
     *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
@@ -1092,6 +1112,42 @@ override func loadView() {
 
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
+
+- Files should be clear and easy to read, and always look to strike a balance that promotes natural visual groupings. While we intentionally limit the number of empty line breaks to one, _where and how_ those are placed are at the discretion of the author. Some prefer a more "compact" approach where line breaks are inserted rather sparingly, where others sometimes prefer a more "airy" approach where line breaks are used a bit more liberally. Regardless of your preference, it's good practice to keep the approach consistent within a project.
+
+> 🚫 >= 2 consecutive line breaks (SwiftLint Custom rule `consecutive_new_lines`)
+
+**Compact Code:**
+
+```swift
+class Polygon { 
+    let numberOfSides: Int
+
+    init() {
+        super.init(numberOfSides: 3)
+        self.doSomething()
+        self.numberOfSides = 5
+    }
+}
+```
+
+**Airy Code:**
+    
+```swift
+class Polygon {
+
+    let numberOfSides: Int
+
+    init() {
+
+        super.init(numberOfSides: 3)
+        self.doSomething()
+        self.numberOfSides = 5    
+
+    }
+
+}
+```
 
 ### File Code Organization
 
@@ -1200,7 +1256,7 @@ extension Wallet: Printabilty {
 
 - Endless files are usually a sign of poor respect of single responsibility principle and design. 
 
-> ⚠️ > 1000 lines, 🚫 > 1500 lines (SwiftLint Standard rule `file_length`)
+> ⚠️ > 1000 lines (SwiftLint Standard rule `file_length`)
 
 - Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
 
