@@ -209,7 +209,7 @@ func reticulate(splines splines: [Double]) -> Bool {
 }
 ```
 
-For functions with long signatures, add line breaks at as many points as you think appropriate. This can ossibly be before first parameter, between other parameters, before return type and before opening brace. Don't forget to add an extra indent on subsequent lines if needed. It can for example look like the following:
+For functions with especially long signatures, consider breaking each parameter onto its own line. Don't forget to add an extra indent on subsequent lines if needed. This also means that the closing brace should then also stand on its own line to clarify the visual separation between the function signature and function body that follows. It should look similar to the following:
 
 ```swift
 func reticulate(splines splines: [Double], 
@@ -423,16 +423,22 @@ default:
 **Preferred:**
 
 ```swift
-if carSpeed > 45.5 { … }
+if carSpeed > 45.5 { 
+    … 
+}
 ```
 
 **Not Preferred:**
 
 ```swift
-if (carSpeed > 45.5) { … }
+if (carSpeed > 45.5) { 
+    … 
+}
 ```
 
-- If and guard statements should not be declared in one line only.
+- If and guard statements should not be declared in one line only, even if they contain only one instruction. 
+
+_Rationale:_ Emphasize the content of the `else` condition and make it easier to debug, keep the style consistent with other control flow statements always declared multi-line (e.g. if, for, etc.) including guard statements themselves when they contain more than one line. 
 
 > 🚫 Error (SwiftLint Custom rule to define) 
 
@@ -447,7 +453,7 @@ guard let variable = variable else {
 **Not Preferred:**
 
 ```swift
-guard let variable = variable else { ... }
+guard let variable = variable else { return }
 ```
 
 - In for loops, when the index is not used, .enumerated() can be removed.
@@ -1107,14 +1113,14 @@ override func loadView() {
 
 Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
 
-- The files should be clear and pleasant to read, without abusing neither line breaks nor spaces use. It can be decided to make the code "airy" (line break before the first / adter the last line of a type / method body); at the only condition to keep this decision consistent throughout the codebase.
+- Files should be clear and easy to read, and always look to strike a balance that promotes natural visual groupings. While we intentionally limit the number of empty line breaks to one, _where and how_ those are placed are at the discretion of the author. Some prefer a more "compact" approach where line breaks are inserted rather sparingly, where others sometimes prefer a more "airy" approach where line breaks are used a bit more liberally. Regardless of your preference, it's good practice to keep the approach consistent within a project.
 
 > 🚫 >= 2 consecutive line breaks (SwiftLint Custom rule `consecutive_new_lines`)
 
-**Regular Code:**
+**Compact Code:**
 
 ```swift
-class Polygon {
+class Polygon { 
     let numberOfSides: Int
 
     init() {
