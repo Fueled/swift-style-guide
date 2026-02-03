@@ -1,1487 +1,3380 @@
-# The Swift Style Guide
+# Fueled Swift Style Guide
 
-This guide is based on the following sources:
+- [Introduction](#introduction)
+  - [Purpose](#purpose)
+  - [Scope](#scope)
+  - [Supported Swift Versions](#supported-swift-versions)
+  - [Audience](#audience)
+  - [How This Guide Is Used (Humans & MCP)](#how-this-guide-is-used-humans--mcp)
 
-- [The Swift Official Style Guide](https://swift.org/documentation/api-design-guidelines)
-- [The Swift Programming Language](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language)
-- [Github Swift style guide](https://github.com/github/swift-style-guide)
-- [Ray Wenderlich Swift style guide](https://github.com/raywenderlich/swift-style-guide)
-- [SlideShare Swift style guide](https://github.com/SlideShareInc/swift-style-guide)
-- [Netguru Swift style guide](https://github.com/netguru/swift-style-guide)
-- [Naming Things in Swift](https://ashfurrow.com/blog/naming-things-in-swift)
+- [Core Principles](#core-principles)
+  - [Readability](#readability)
+  - [Safety](#safety)
+  - [Explicitness](#explicitness)
+  - [Consistency](#consistency)
+  - [Performance Awareness](#performance-awareness)
 
-### Purpose of the style guide
+- [Source File Structure](#source-file-structure)
+  - [File Naming](#file-naming)
+  - [File Encoding](#file-encoding)
+  - [File Headers](#file-headers)
+  - [File Comments](#file-comments)
+  - [Non-Documentation Comments](#non-documentation-comments)
+  - [Import Statements](#import-statements)
+    - [Module Imports](#module-imports)
+    - [Submodule Imports](#submodule-imports)
+    - [@testable Imports](#testable-imports)
+  - [Declaration Order](#declaration-order)
+  - [Overloaded Declarations Ordering](#overloaded-declarations-ordering)
+  - [Access Control Placement & Rules](#access-control-placement--rules)
+  - [One Primary Type per File](#one-primary-type-per-file)
+  - [MARK Sections](#mark-sections)
 
-This guide is intended to outline the set of shared practices Fueled will apply to current and future Swift Projects in order to implement a uniform Swift code style, readability, consistency and simplicity.
+- [General Formatting](#general-formatting)
+- [Whitespace](#whitespace)
+- [Line Wrapping](#line-wrapping)
 
-This is an attempt to encourage patterns that accomplish the following goals (in
-rough priority order):
+- [Naming](#naming)
 
- 1. Increased rigor, and decreased likelihood of programmer error
- 1. Increased clarity of intent
- 1. Reduced verbosity
- 1. Fewer debates about aesthetics
+- [Language Fundamentals](#language-fundamentals)
+  - [Immutability (`let` vs `var`)](#immutability-let-vs-var)
+  - [Type Inference](#type-inference)
+  - [Optionals](#optionals)
+  - [Implicitly Unwrapped Optionals](#implicitly-unwrapped-optionals)
+  - [Control Flow](#control-flow)
+  - [Trailing Closure Rules](#trailing-closure-rules)
+  - [Pattern Matching](#pattern-matching)
+  - [Tuples](#tuples)
+  - [Typealiases](#typealiases)
+  - [String & Literal Rules](#string--literal-rules)
 
-Remember: code is written only once, but is read over and over, so programmers should prioritize optimizations for ease of reading over ease of writing. This guide has been written for Swift 3.
+- [Types & APIs](#types--apis)
+  - [Struct vs Class](#struct-vs-class)
+  - [Enums](#enums)
+  - [Enum Case Layout Rules](#enum-case-layout-rules)
+  - [Protocol Design](#protocol-design)
+  - [Extensions](#extensions)
+  - [Initializers](#initializers)
+  - [Factory Methods](#factory-methods)
+  - [Operators](#operators)
+  - [Public API Design](#public-api-design)
 
-### Contribution
+- [Initializers & Instantiation](#initializers--instantiation)
 
-If you want to suggest a change or addition that will help accomplish
-the [Purpose](#purpose-of-the-style-guide) of this style guide, please open a pull request that:
+- [Concurrency](#concurrency)
 
- 1. Explains the guideline
- 1. Demonstrates the guideline with more-or-less valid example code
- 1. Justifies the guideline by explaining the rationale behind it
+- [Error Handling](#error-handling)
 
-Just note that all suggestions are open to discussion and debate! :smile:
+- [Documentation](#documentation)
 
-## Table of contents
+- [Testing](#testing)
 
-* [Xcode Preferences](#xcode-preferences)
-	* [Spacing](#spacing)
-* [Swift Specific Guides](#swift-specific-guides)
-	* [Naming](#naming)
-		* [Functions and Arguments](#functions-and-arguments)
-		* [Enumerations](#enumerations)
-    * [Operators](#operators)
-        * [Operator Definitions](#Operator-definitions)
-	* [Access Control](#access-control)
-	* [Switch](#switch)
-	* [Control Flow](#control-flow)
-	* [Properties](#properties)
-		* [Identifiers](#identifiers)
-	* [Closures](#closures)
-	* [Singleton](#singleton)
-	* [Strings](#strings)
-	* [Enums](#enums)
-	* [Documentation](#documentation)
-	* [Custom Types & Type Identifiers](#custom-types-&-type-identifiers)
-	* [Mutability](#mutability)
-	* [Optionals](#optionals)
-	* [Static code vs Dynamic code](#static-code-vs-dynamic-code)
-	* [Classes and Inheritance](#classes-and-inheritance)
-* [Code organization](#code-organization)
-    * [Project Code Organization](#project-code-organization)
-	* [File Code Organization](#file-code-organization)
-    * [Functions Code Organization](#functions-code-organization)
-* [Value Types vs Reference Types](#value-types-vs-reference-types)
-* [Cocoa Specific Guides](#cocoa-specific-guides)
-	* [Protocols](#protocols)
-		* [UITableView & UICollectionView](#UITableView-&-UICollectionView)
-	* [NSNotification](#NSNotification)
-	* [View Controllers](#View-Controllers)
-	* [UIView](#UIView)
-	* [Core Foundation](#Core-Foundation)
-	* [User Facing Strings](#User-Facing-Strings)
-	* [Objective-C Interoperability](Objective-C-Interoperability)
-* [Others](#Others)
-	
-## Xcode Preferences
+- [Performance](#performance)
+
+- [Anti-Patterns](#anti-patterns)
+
+</br>
+
+## Introduction
+
+### Purpose
+
+This document defines the **Swift style guide** used by the [Fueled](https://fueled.com) team.
+
+Its purpose is to:
+- Establish **consistent, readable, and safe Swift code** across all projects
+- Encode **language-level rules only**, independent of frameworks or architectures
+- Serve as a **single source of truth** for humans, tooling, and MCP-based systems
+
+This guide focuses strictly on **Swift the language**. Application architecture, platform conventions, and third-party frameworks are intentionally out of scope and will be defined in separate documents.
+
+### Scope
+
+The rules in this guide apply to:
+- All production Swift code
+- All modules and packages written in Swift
+- Shared libraries and internal tooling
+
+The guide does **not** define:
+- UI architecture (UIKit or SwiftUI)
+- Navigation patterns
+- Dependency-management frameworks
+- Product-specific or feature-specific conventions
+
+### Supported Swift Versions
+
+- **Swift 6** is the default and primary target
+- **Swift 5.9** is supported **only** for backward compatibility
+- All rules assume **Swift 6 language mode** and **strict concurrency**
+- Code must not rely on deprecated or transitional Swift 5 behaviors
+
+### Audience
+
+This guide is intended for:
+- Swift engineers writing or maintaining production code
+- Code reviewers enforcing consistency and correctness
+- Tooling and automation systems (linters, formatters, CI)
+- MCP and LLM-based assistants querying rules programmatically
+
+
+### How This Guide Is Used (Humans & MCP)
+
+- Defines the **authoritative ruleset** for Swift code across the organization
+- Acts as the **reference baseline** during code reviews and discussions
+- Serves as the **input source** for automated enforcement (linters, CI)
+- Enables **deterministic rule lookup** by MCP and LLM-based systems
+- Is treated as **read-only output**, not the canonical rule storage
+
+
+## Core Principles
+
+### Readability
+
+Code is written **to be read by humans first**, not optimized for brevity or cleverness.
+
+- Prefer clear, explicit constructs over concise but opaque ones
+- Optimize for the reader who is unfamiliar with the codebase
+- Make intent obvious without requiring comments
+- Avoid patterns that rely on deep language knowledge to understand
+- Favor linear, easy-to-follow control flow
+
+Readability is evaluated over the **lifetime of the code**, including:
+- Code reviews
+- Debugging
+- Refactoring
+- Onboarding new engineers
+
+When multiple correct implementations exist, choose the one that is **easiest to understand**, even if it is more verbose.
+
+
+### Safety
+
+Code is written to **prevent incorrect behavior by construction** rather than relying on discipline or conventions.
+
+- Prefer language features that eliminate entire classes of bugs
+- Make invalid states unrepresentable
+- Avoid unsafe constructs even when they appear convenient
+- Fail early and explicitly when assumptions are violated
+
+Safety principles include:
+- Avoiding force unwraps and force casts
+- Favoring `guard` and explicit error handling
+- Using strong typing to prevent misuse
+- Treating concurrency and shared state as safety concerns
+
+Safety takes precedence over performance and brevity unless there is a clear, measured reason to trade it off.
+
+
+### Explicitness
+
+Code should make its behavior and intent **obvious at the point of use**, without relying on hidden assumptions or implicit knowledge.
+
+- Prefer explicit names over shortened or inferred ones
+- Make side effects visible in APIs
+- Avoid relying on implicit defaults when they affect behavior
+- Require explicit handling of error and concurrency boundaries
+
+Explicitness applies especially to:
+- Public APIs
+- Concurrency and actor boundaries
+- Initialization and state changes
+- Error propagation
+
+When implicit behavior improves readability without hiding meaning, it is acceptable.  
+When in doubt, prefer being explicit.
+
+
+### Consistency
+
+Code should follow **the same patterns everywhere**, regardless of author or module.
+
+- Similar problems are solved in similar ways
+- Naming, structure, and formatting do not vary by personal preference
+- Established patterns are followed even when alternatives exist
+- Deviations require a clear, documented reason
+
+Consistency enables:
+- Faster code reviews
+- Easier navigation across the codebase
+- Reliable automation and tooling
+- Predictable MCP rule application
+
+Consistency is enforced at the **codebase level**, not per file or per team.
+
+### Performance Awareness
+
+Code is written with an understanding of **performance characteristics**, without sacrificing clarity or safety prematurely.
+
+- Be aware of the cost of allocations, copying, and synchronization
+- Prefer value semantics while understanding their copying behavior
+- Avoid unnecessary work in hot paths
+- Measure before optimizing
+
+Performance considerations include:
+- Value vs reference semantics
+- Copy-on-write behavior
+- Async task creation and cancellation
+- Actor isolation and contention
+
+Performance optimizations must be:
+- Justified by measurement
+- Localized and documented
+- Reviewed with the same rigor as correctness changes
+
+Readability and safety are not compromised unless there is a clear, demonstrated performance need.
+
+
+## Source File Structure
+
+### File Naming
+
+Source file names describe the **primary declaration** contained in the file.
+
+- All Swift source files use the `.swift` extension
+- A file containing a single primary type is named after that type
+- File names use **UpperCamelCase**, matching the type name exactly
+- Do not include prefixes, suffixes, or abbreviations unrelated to the type
+
+```swift
+// UserProfile.swift
+struct UserProfile { }
+```
+
+If a file contains a primary type and closely related helpers, the file is still named after the primary type.
+
+```swift
+// Order.swift
+struct Order { }
+
+func calculateTax(for order: Order) -> Decimal { }
+```
+
+
+#### Extensions and Protocol Conformance
+
+When a file contains extensions that add protocol conformance, the file name combines:
+
+- The type name
+- The protocol name
+- A + separator
+
+```swift
+// UserProfile+Codable.swift
+extension UserProfile: Codable { }
+```
+
+If multiple extensions are grouped for organization rather than a single protocol, use a descriptive suffix prefixed with the type name.
+
+```swift
+// UserProfile+Extensions.swift
+extension UserProfile { }
+```
+
+Files that contain related top-level declarations without a clear primary type are named descriptively.
+
+```swift
+// MathUtilities.swift
+func clamp(_ value: Int, min: Int, max: Int) -> Int { }
+```
+
+File names must be predictable and stable, allowing engineers and tools to locate code without opening files.
+
+
+### File Encoding
+
+All Swift source files are encoded using **UTF-8**.
+
+- UTF-8 is required for all source files
+- Do not use alternative encodings
+- Source control must preserve UTF-8 encoding without byte-order marks (BOM)
+
+String literals may contain Unicode characters when they improve readability.
+
+```swift
+let title = "Überblick"
+let emoji = "🚀"
+```
+
+Invisible or non-printable characters must not appear directly in source files and should be represented using explicit Unicode escape sequences when required.
+
+UTF-8 encoding is mandatory to ensure consistent behavior across toolchains, platforms, and MCP-based processing.
+
+### File Headers
+
+All Swift source files must begin with the following standardized file header:
+
+```swift
+// Created for APP_NAME in 2026
+// Using Swift 6.0
+```
+
+The header is mandatory for all new Swift files
+
+`APP_NAME` must match the Xcode project or module name
+
+Author names, copyright notices, and dates other than the year are forbidden
+
+The header must appear at the very top of the file, before any imports
+
+
+### File Comments
+
+File-level comments are **optional** and should be used only when they add meaningful context.
+
+- Do not add file comments when a file contains a single primary type
+- Prefer documentation comments on the type itself
+- Use file comments only to explain **why** the file exists, not **what** it contains
+
+File comments are appropriate when:
+- A file groups multiple related types
+- The file provides shared or cross-cutting functionality
+- Additional context is required to understand the file’s role
+
+```swift
+// Contains shared parsing utilities used by multiple decoders.
+// These types are intentionally internal to avoid leaking abstractions.
+```
+
+Avoid file comments that restate obvious information.
+
+```swift
+// AVOID: Redundant and uninformative
+// This file defines the UserProfile struct.
+struct UserProfile { }
+```
+
+File comments must not be used to:
+
+- Explain implementation details
+- Replace proper naming or documentation comments
+- Track authorship or change history
+
+
+### Non-Documentation Comments
+
+Non-documentation comments are used sparingly to explain why code exists, not what the code does.
+
+#### Allowed Comment Style
+- Use single-line comments only: `//`
+- Block comments (`/* */`) are forbidden
+- Do not mix comment styles within a file
+
+```swift
+// GOOD
+// This cache exists to avoid repeated decoding in hot paths.
+```
+
+```swift
+// FORBIDDEN
+/*
+ This cache exists to avoid repeated decoding in hot paths.
+*/
+```
+
+#### When to Use Comments
+- Non-documentation comments are allowed only when they:
+- Explain non-obvious intent
+- Justify a trade-off or constraint
+- Document a known limitation
+- Explain a workaround for external behavior
+
+```swift
+// Required to work around radar FB123456
+let timeout = legacyTimeout
+```
+
+#### When Comments Are Forbidden
+Do **not** use comments to:
+- Restate what the code clearly expresses
+- Explain syntax or language features
+- Replace good naming or structure
+- Track authorship or history
+
+```swift
+// AVOID
+// Increment index by one
+index += 1
+```
+
+#### Comment Placement
+- Place comments immediately above the code they describe
+- Do not place comments inline unless unavoidable
+- Do not trail comments at the end of lines
+
+```swift
+// GOOD
+// Ensures stable ordering across launches
+items.sort()
+```
+
+```swift
+// AVOID
+items.sort() // stable ordering
+```
+
+#### Comment Tone and Content
+- Comments must be factual and concise
+- Avoid speculation or personal notes
+- Avoid TODOs in comments; use issue tracking instead
+
+```swift
+// AVOID
+// TODO: fix this later
+```
+
+#### Comment Lifecycle
+- Comments must be updated or removed when code changes
+- Outdated comments are considered bugs
+- Comments must never contradict the code
+
+
+### Import Statements
+
+Import statements declare a file’s **explicit dependencies** and define which modules are available within that file.
+
+The following rules apply to **all** import statements, regardless of type:
+
+- Import statements must appear at the top of the file, after the file header and file comments
+- Only import modules that are directly used in the file
+- Do not rely on transitive imports
+- Remove unused imports immediately
+- Imports must be deterministic and predictable
+- Imports are sorted **alphabetically within each group**
+
+Import statements are grouped and ordered as follows:
+
+1. Module and submodule imports used in production code
+2. Individual declaration imports (when explicitly allowed)
+3. `@testable` imports (test targets only)
+
+Each group:
+- Is ordered lexicographically (A–Z)
+- Is separated from other groups by a single blank line
+
+#### Example
+
+```swift
+import CoreLocation
+import Foundation
+import UIKit
+
+import func Darwin.C.isatty
+
+@testable import MyModuleUnderTest
+```
+
+#### Module Imports
+
+Module imports are the **default and preferred** form of importing dependencies.
+
+- Import full top-level modules using `import ModuleName`
+- Do not import submodules unless required (see Submodule Imports)
+- Do not import individual symbols unless explicitly justified
+- Each imported module must be directly used in the file
+
+Module imports must be:
+- Explicit
+- Minimal
+- Alphabetically ordered within their group
+
+##### Examples
+
+```swift
+// GOOD
+import CoreLocation
+import Foundation
+import UIKit
+```
+
+```swift
+// AVOID: Unused import
+import Foundation
+import UIKit  // UIKit is not used in this file
+```
+
+```swift
+// AVOID: Relying on transitive imports
+import UIKit
+// Uses Date without importing Foundation
+```
+
+When multiple modules are required, prefer clarity over clever consolidation.
+If a module is not used, it must not be imported.
+
+#### Submodule Imports
+
+Submodule imports are **allowed only as an exception** to module imports.
+
+- Prefer importing the top-level module whenever possible
+- Import submodules only when required to:
+  - Reduce compile time
+  - Avoid namespace conflicts
+  - Access APIs not exposed by the parent module
+- Submodule imports must be justified by necessity, not preference
+
+Submodule imports follow the same ordering rules as module imports:
+- Alphabetically ordered within their group
+- Grouped with other production imports
+
+##### Examples
+
+```swift
+// GOOD: Submodule required for specific API
+import SwiftUI.Layout
+```
+
+```swift
+// GOOD: Submodule import to avoid namespace collision
+import SwiftUI.Layout
+```
+
+```swift
+// AVOID: Unnecessary submodule import
+import Foundation.URL
+// Foundation import would be sufficient
+```
+
+Do not mix submodule imports with individual symbol imports.
+If a submodule import becomes common across the codebase, reconsider importing the parent module instead.
+
+#### @testable Imports
+
+`@testable` imports are **restricted to test targets only** and must never appear in production code.
+
+- `@testable` is allowed **only** in test bundles
+- Production targets must not depend on `@testable` access
+- Use `@testable` to test internal behavior that cannot reasonably be exposed via public APIs
+- Do not use `@testable` as a substitute for proper design or dependency injection
+
+`@testable` imports follow these rules:
+- Appear **after all non-test imports**
+- Are grouped separately
+- Are alphabetically ordered if multiple are present
+
+##### Examples
+
+```swift
+// GOOD: Test target
+import XCTest
+
+@testable import MyApp
+```
+
+```swift
+// AVOID: Using @testable in production code
+@testable import MyApp
+```
+
+```swift
+// AVOID: Mixing @testable with production imports
+@testable import MyApp
+import Foundation
+```
+
+Excessive reliance on `@testable` is a signal that internal boundaries may need to be revisited.
+
+
+### Declaration Order
+
+Declarations within a source file follow a **consistent, top-to-bottom order** to improve readability and predictability.
+
+The required order is:
+
+1. Imports  
+2. File-level type aliases (if any)  
+3. Primary type declaration  
+4. Extensions adding protocol conformances  
+5. Extensions adding public or internal functionality  
+6. **Private extensions containing private helpers**  
+7. Nested helper types (if any)
+
+This order must be preserved unless there is a strong, documented reason to deviate.
+
+
+#### Primary Type
+
+The primary type of the file appears first and matches the file name.
+
+```swift
+struct UserProfile {
+    let id: UserID
+}
+```
+
+#### Protocol Conformance Extensions
+Use extensions to group protocol conformances.
+
+- One protocol per extension
+- No private helpers inside conformance extensions
+
+```swift
+extension UserProfile: Codable {
+}
+```
+
+#### Functional Extensions
+Public or internal functionality that is not protocol-driven lives in dedicated extensions.
+
+```swift
+extension UserProfile {
+    func displayName() -> String {
+        "\(firstName) \(lastName)"
+    }
+}
+```
+
+#### Private Extensions
+All private functions and private computed properties must be placed in a `private` extension at the bottom of the file.
+
+- Do not mix private helpers with public or internal APIs
+- Private extensions exist solely for implementation details
+- One or more private extensions are allowed if logically grouped
+
+```swift
+private extension UserProfile {
+    func normalizedName() -> String {
+        displayName().lowercased()
+    }
+}
+```
+
+#### Nested Types
+Nested helper types appear after all extensions unless they are essential to the primary type’s definition.
+
+```swift
+private extension UserProfile {
+    enum ValidationError: Error {
+        case missingName
+    }
+}
+```
+
+This structure ensures:
+
+- Clear separation between API and implementation
+- Easier scanning for public surface area
+- Deterministic structure for tooling and MCP systems
+
+
+### Overloaded Declarations Ordering
+
+Overloaded declarations must be grouped contiguously to improve readability, discoverability, and correctness.
+
+---
+
+#### General Rules
+- Overloaded functions, methods, or initializers must appear adjacent
+- No unrelated code may appear between overloads
+- Overloads must be ordered from most specific to most general
+
+```swift
+// GOOD
+func loadUser(id: UserID) async throws -> User
+func loadUser(id: UserID, forceRefresh: Bool) async throws -> User
+```
+
+```swift
+// AVOID
+func loadUser(id: UserID) async throws -> User
+
+private func helper() { }
+
+func loadUser(id: UserID, forceRefresh: Bool) async throws -> User
+```
+
+#### Initializer Overloads
+Initializer overloads must also be grouped together.
+
+```swift
+// GOOD
+init(id: UserID)
+init(id: UserID, name: String)
+```
+
+```swift
+// AVOID
+init(id: UserID)
+
+func validate() { }
+
+init(id: UserID, name: String)
+```
+
+#### Overloads Across Extensions
+- Overloads may be split across extensions only when:
+  - Each extension has a clear, documented purpose
+  - Overloads remain contiguous within that extension
+
+```swift
+// GOOD
+extension UserProfile {
+    func update(name: String)
+    func update(name: String, email: String)
+}
+```
+
+```swift
+// AVOID
+extension UserProfile {
+    func update(name: String)
+}
+
+extension UserProfile {
+    func update(name: String, email: String)
+}
+```
+
+#### Protocol Conformance and Overloads
+- Do not interleave overloads with protocol conformances
+- Overloads implementing protocol requirements must remain grouped
+
+```swift
+// AVOID
+func save()
+extension UserProfile: Codable { }
+func save(force: Bool)
+```
+
+### Access Control Placement & Rules
+Access control defines a type’s intended visibility and API surface.
+It must be applied intentionally and consistently, without unnecessary verbosity.
+
+---
+
+#### General Rules
+- Always use the most restrictive access level possible
+- Do not widen access beyond what is required
+- Access control is part of the API contract
+
+Access levels, from most restrictive to least:
+1. `private`
+2. `fileprivate`
+3. `internal`
+4. `public`
+5. `open`
+
+
+#### Default Access
+- Relying on Swift’s default internal access is allowed
+- Explicit internal is optional, not required
+- Explicit access modifiers are required only when not internal
+
+```swift
+// GOOD
+struct UserProfile {
+}
+```
+
+```swift
+// ALSO GOOD
+internal struct UserProfile {
+}
+```
+
+```swift
+// REQUIRED
+public struct UserProfile {
+}
+```
+
+#### Type-Level Access Control
+- Declare access control at the type level when the type is not `internal`
+- Members must not have broader access than the enclosing type
+
+```swift
+public struct Configuration {
+    public let timeout: TimeInterval
+}
+```
+
+```swift
+// AVOID
+public struct Configuration {
+    let timeout: TimeInterval
+}
+```
+
+#### Member-Level Access Control
+
+- Apply access control at the member level only when it differs from the type’s access
+- Prefer grouping members by access using extensions
+
+```swift
+struct UserProfile {
+    let id: UserID
+}
+
+extension UserProfile {
+    func displayName() -> String {
+        "\(firstName) \(lastName)"
+    }
+}
+
+private extension UserProfile {
+    func normalizedName() -> String {
+        displayName().lowercased()
+    }
+}
+```
+
+#### `private` vs `fileprivate`
+- Prefer `private`
+- Use `fileprivate` only when multiple types in the same file must share implementation details
+
+```swift
+// ACCEPTABLE
+fileprivate let cacheKey = "user_cache"
+```
+
+```swift
+// AVOID
+fileprivate func helper() { }
+```
+
+If `fileprivate` is common, the file structure likely needs refactoring.
+
+#### Extensions and Access Control
+- Do not mix access levels within the same extension
+- Each extension has a single access intent
+
+```swift
+extension UserProfile {
+    func updateName(_ name: String) { }
+}
+
+private extension UserProfile {
+    func validate() { }
+}
+```
+
+```swift
+// AVOID
+extension UserProfile {
+    func updateName(_ name: String) { }
+    private func validate() { }
+}
+```
+
+#### `public` and `open`
+- `public` is the default for exposed APIs
+- `open` is forbidden unless subclassing or overriding is explicitly required
+- Public APIs must be stable and documented
+
+```swift
+public struct APIClient {
+}
+```
+
+```swift
+// AVOID
+open class APIClient {
+}
+```
+
+#### Access Control and Protocols
+- Protocol requirements define the minimum required visibility
+- Conforming members must meet or exceed protocol visibility
+
+```swift
+public protocol Loadable {
+    func load() async throws
+}
+
+public struct Loader: Loadable {
+    public func load() async throws {
+    }
+}
+```
+
+#### Access Control in Tests
+- Production code must not change access levels for testing
+- Use `@testable` only in test targets
+- Do not expose internals solely for tests
+
+
+### One Primary Type per File
+
+Each source file must declare **one primary type** that represents the file’s main responsibility.
+
+- A file’s name must match its primary type
+- The primary type defines the file’s public surface area
+- Additional declarations are allowed only if they directly support the primary type
+
+```swift
+// GOOD
+// UserProfile.swift
+struct UserProfile {
+    let id: UserID
+}
+```
+
+```swift
+// AVOID: Multiple primary types in one file
+struct UserProfile { }
+struct UserSettings { }
+```
+
+#### Supporting Declarations
+
+Supporting declarations are allowed when they are:
+
+- Closely related to the primary type
+- Not meaningful as standalone types
+
+Examples of allowed supporting declarations:
+
+- Nested types
+- Extensions of the primary type
+- Private helper types scoped to the primary type
+
+```swift
+struct UserProfile {
+    let id: UserID
+
+    enum Status {
+        case active
+        case inactive
+    }
+}
+```
+
+```swift
+private extension UserProfile {
+    func isValid() -> Bool {
+        id.isEmpty == false
+    }
+}
+```
+
+#### Exceptions
+
+Multiple primary types in a single file are allowed only when:
+
+- The file defines tightly coupled value types (e.g. small DTOs)
+- Splitting the file would reduce readability
+
+Such exceptions must be rare and justified during code review.
+
+The default rule remains: **one** primary type per file.
+
+### MARK Sections
+
+`MARK:` comments are used to **visually organize code** within a file and must be applied consistently.
+
+- Use `// MARK:` to separate logical sections
+- `MARK:` comments improve navigation in Xcode’s jump bar
+- Do not overuse `MARK:`; only introduce them when they add clarity
+- `MARK:` sections must reflect the file’s declaration order
+
+#### Recommended Usage
+
+Use `MARK:` to separate:
+- Lifecycle sections
+- Protocol conformances
+- Public API vs private implementation
+- Logical feature groupings
+
+```swift
+struct UserProfile {
+    let id: UserID
+}
+
+// MARK: - Codable
+
+extension UserProfile: Codable {
+}
+
+// MARK: - Public API
+
+extension UserProfile {
+    func displayName() -> String {
+        "\(firstName) \(lastName)"
+    }
+}
+
+// MARK: - Private Helpers
+
+private extension UserProfile {
+    func normalizedName() -> String {
+        displayName().lowercased()
+    }
+}
+```
+
+#### Formatting Rules
+
+- Always include a dash after MARK: when naming a section
+- Section titles use Title Case
+- Do not nest MARK: sections
+- Avoid empty MARK: sections
+
+```swift
+// GOOD
+// MARK: - Private Helpers
+
+// AVOID
+// MARK: Private helpers
+// MARK:
+// MARK: -- Helpers
+```
+
+`MARK:` sections are a navigation aid, not a substitute for good structure or naming.
+
+## General Formatting
+
+General formatting rules ensure **consistent appearance**, improve readability, and enable reliable automated formatting.
+
+These rules apply to all Swift source files unless explicitly stated otherwise.
+
+---
+
+### Line Length
+
+- Maximum line length is **120 characters**
+- Lines exceeding the limit must be wrapped
+- Do not exceed the limit by disabling formatter rules
+
+```swift
+// GOOD
+let description = "This is a readable line that fits within the allowed limit."
+```
+
+```swift
+// AVOID
+let description = "This line is far too long and makes the code harder to read and review in diffs, the line should be wrapped."
+```
 
 ### Indentation
 
-Code should be indented with tabs (as shown in the example below) rather than spaces so that the author may decide as a matter of preference how many spaces each tab is displayed as. This can be changed from the default in Xcode->Preferences->Text Editing->Indentation
-
-> ⚠️ Warning (SwiftLint Custom rule `indentation_character`) 
-
-It is also recommended that you disable line wrapping to further improve readability. While this is strictly a user preference, it does become helpful in our enforcement of line length as noted below.
-
-![Xcode Indent settings](screens/indentation.png)
-
-> **Tip**
-
->* To convert existing projects to this new format, you can select all code in a file (⌘A to select all) and then apply your new settings (using ^I or Editor->Structure->Re-Indent). Unfortunately, there is no way to do this to the entire project so you'll need to do it for each file in your project.
-
-It is a standard of our coding guidelines to limit line length to no more than 220 characters in an effort to improve stylistic readability of code. What this means is that longer method signatures that exceed this character limit should manually break to a new line. A longer line will not trigger an error but a warning, except if longer than 9999 characters. To aid in enforcing this guideline, you should display the Page Guide (in Xcode->Preferences->Text Editing->Editing), and change the column width from 80 to 220.
-
-> ⚠️ > 220 characters (SwiftLint Standard rule `line_length`)
-
-You should also make sure that Xcode is set to automatically trim trailing whitespace, including whitespace-only lines.
-
-![Xcode Editing settings](screens/editing.png)
-
-## Line Spacing
-
-Vertical spaces should be used in long methods to separate its name from implementation. You may also want to use vertical spaces to separate logic within a function. Shorter methods (one or two lines) don't need such spacing. 
-
- * Make liberal use of single blank lines to divide code into logical blocks
- * Lead logical blocks with a comment line if necessary
- * Remove any trailing whitespace or leading indentation on blank lines
-
-The very first line of a document shouldn't be empty (there can be, however, an empty line between header comments and the first line of code). It is also good practice to end files with an empty line. This helps make it clear that the end of the file is reached and makes adding additional lines less prone to error. 
-
-> ⚠️ Warning (SwiftLint Standard rules `leading_whitespace` and `trailing_newline`) 
-
-Opening braces (`if`/`switch`/`while`/`do` etc.) should be preceded by a single space and on the same line as the declaration, or optionally on a new line if the statement is multiline. Note that `else` and `catch` statements must be on a new line after the previous declaration.
-
-> ⚠️ Warning (SwiftLint Standard rules `opening_brace` and `switch_case_on_newline`) 
-
-**Preferred:**
+- Use 4 spaces for indentation
+- Tabs are forbidden
+- Indentation reflects logical nesting, not alignment tricks
 
 ```swift
-if user.isHappy {
-    // Do something
-} else {
-    // Do something else
+if isValid {
+    performAction()
 }
 ```
 
-**Not Preferred:**
+```swift
+// AVOID
+if isValid {
+  performAction()
+}
+```
+
+### Braces
+
+- Use K&R brace style
+- Opening brace is on the same line
+- Closing brace aligns with the start of the declaration
 
 ```swift
-if user.isHappy
+if isReady {
+    start()
+}
+```
+
+```swift
+// AVOID
+if isReady
 {
-    // Do something
-}
-else {
-    // Do something else
+    start()
 }
 ```
 
-## Swift Specific Guides 
-### Naming
+### Semicolons
 
-Use descriptive names with camel case for classes, methods, variables, etc. Class names should be capitalized, while method names and variables should start with a lower case letter.
-
-**Preferred:**
+- Semicolons are forbidden
+- Swift allows semicolons, but they must not be used
 
 ```swift
-private let maximumWidgetCount = 100
+// GOOD
+let a = 1
+let b = 2
+```
 
-class WidgetContainer {
-    var widgetButton: UIButton
-    let widgetHeightPercentage = 0.85
+```swift
+// AVOID
+let a = 1; let b = 2
+```
+
+### One Statement per Line
+
+- Exactly one statement per line
+- Do not combine statements for brevity
+
+```swift
+// GOOD
+configure()
+start()
+```
+
+```swift
+// AVOID
+configure(); start()
+```
+
+### Parentheses Usage
+
+- Avoid unnecessary parentheses
+- Use parentheses only to clarify precedence
+
+```swift
+// GOOD
+if isEnabled && isAvailable {
+    run()
 }
 ```
 
-**Not Preferred:**
-
 ```swift
-let MAX_WIDGET_COUNT = 100
-
-class app_widgetContainer {
-    var wBut: UIButton
-    let wHeightPct = 0.85
-}
-```
--
-
-#### Functions and Arguments
-
-For functions and init methods, prefer named parameters for all arguments unless the context is very clear. Include external parameter names if it makes function calls more readable.
-
-Function names should be as descriptive and meaningful as possible. Try to express its intent in the name, by keeping it compact at the same time.
-Arguments should also be descriptive. Remember that you can use argument labels, which may be more meaningful to a user. 
-
-> This is even more true with projects implemented in Swift 3 because of its Great Renaming.
-
-**Preferred:**
-
-```swift
-func convert(point point: Point, to view: View) -> Point
-```
-**Not Preferred:**
-
-```swift
-func convertPoint(point: Point, toView view: View) -> Point
-```
-
-Use default values for arguments where a function expects any value or some specific value most of the time. If a particular argument is not required for a function, it's good to make it optional and `nil` by default.
-
-Follow the standard Apple convention of referring to the first parameter in the method name in cases where there is just a single argument or when adding parameters to methods only increases verbosity
-
-
-```swift
-class Guideline {
-    func combineWithString(incoming: String, options: Dictionary? = nil) { ... }
-    func upvoteBy(amount: Int) { ... }
+// AVOID
+if (isEnabled == true) {
+    run()
 }
 ```
 
-Keep short function declarations on one line including the opening brace:
+### Trailing Commas
+
+- Trailing commas are required in multi-line collections
+- Trailing commas are forbidden in single-line collections
 
 ```swift
-var isSomeStuff: Bool = true
+// GOOD
+let values = [
+    1,
+    2,
+    3,
+]
+```
 
-func reticulate(splines splines: [Double]) -> Bool {
-    // reticulate code goes here
-    return isSomeStuff
+```swift
+// AVOID
+let values = [1, 2, 3,]
+```
+
+### Attributes Formatting
+
+- Place attributes on their own line above the declaration
+- Do not inline attributes with declarations
+
+```swift
+@MainActor
+final class ViewModel {
 }
 ```
 
-For functions with especially long signatures, consider breaking each parameter onto its own line. Don't forget to add an extra indent on subsequent lines if needed. This also means that the closing brace should then also stand on its own line to clarify the visual separation between the function signature and function body that follows. It should look similar to the following:
-
 ```swift
-func reticulate(splines splines: [Double], 
-                adjustmentFactor: Double,
-                translateConstant: Int, 
-                comment: String) 
-                -> Bool 
-{
-                // reticulate code goes here
-                return isSomeStuff
-}
+// AVOID
+@MainActor final class ViewModel { }
 ```
 
--
+### Generated Code Exceptions
 
-#### Enumerations
-
-Use lowerCamelCase for enumeration values:
-
-```swift
-enum Shape {
-    case rectangle
-    case square
-    case triangle
-    case circle
-}
-```
--
-
-#### Class Prefixes
-
-- Swift types are automatically namespaced by the module that contains them and you should ***NOT*** add a class prefix. If two names from different modules collide you can disambiguate by prefixing the type name with the module name.
+- Generated files may ignore formatting rules
+- Generated code must be clearly marked
+- Do not manually edit generated files
 
 ```swift
-import SomeModule
-
-let myClass = SomeModule.UsefulClass()
+// This file is generated. Do not edit.
 ```
 
-It is strongly misadvised to name suffix your types with words like Manager, Helper or Utility because they're meaningless and their role can be easily misinterpreted.
-On the other hand developer discretion is best.
+Generated code exceptions must be explicit and limited to generated sources only.
 
-- Type names should be precise, self-explanatory and of reasonable size.
+## Whitespace
 
-> ⚠️ > 40 characters, 🚫 < 2 or > 100 characters (SwiftLint Standard rule `variable_name`)
+Whitespace is used to **separate logical concepts**, not to control layout or duplicate formatting rules defined elsewhere.
 
--
+This section intentionally excludes indentation and brace placement, which are defined in **General Formatting**.
 
-### Operators
+---
 
-- Prefer shorthand operators (+=, -=, *=, /=) over doing the operation and assigning:
+### Horizontal Whitespace
 
-> ⚠️ Warning (SwiftLint Standard rule `shorthand_operator`) 
-
-**Preferred:**
+- Use a single space around binary operators
+- No spaces around unary operators
+- No trailing whitespace at the end of lines
 
 ```swift
-wHeightPct += 0.85
+// GOOD
+let result = a + b
+let isValid = !items.isEmpty
 ```
 
-**Not Preferred:**
-    
 ```swift
-wHeightPct = wHeightPct + 0.85
+// AVOID
+let result=a+b
+let isValid = ! items.isEmpty
 ```
 
-- Prefer `!= nil` over `let _ =`. Note that sometimes, it might make more sense to use `guard` statement. Ideal if you need to escape a method when the condition is not satisfied at the beginning of its body for instance (e.g. testing preconditions).
+### Vertical Whitespace
 
-> ⚠️ Warning (SwiftLint Standard rule `unused_optional_binding`) 
-
-**Preferred:**
-
-```swift
-if optionalValue != nil
-```
-
-**Not Preferred:**
-    
-```swift
-if let _ = optionalValue { … }
-```
-
-#### Operator definitions
-
-- Use whitespace around operators when defining them. Instead of:
+- Use blank lines to separate logical sections
+- Use a single blank line between:
+  - Property groups
+  - Methods
+  - Extensions
+- Do not use multiple consecutive blank lines
 
 ```swift
-func <|(lhs: Int, rhs: Int) -> Int
-func <|<<A>(lhs: A, rhs: A) -> A
-```
+struct UserProfile {
+    let id: UserID
+    let name: String
 
-write:
-
-```swift
-func <| (lhs: Int, rhs: Int) -> Int
-func <|< <A>(lhs: A, rhs: A) -> A
-```
-
-_Rationale:_ Operators consist of punctuation characters, which can make them difficult to read when immediately followed by the punctuation for a type or value parameter list. Adding whitespace separates the two more clearly.
-
-### Access Control
-
-- Always specify access control explicitly for top-level definitions. Top-level functions, types, and variables should always have explicit access control specifiers:
-
-```swift
-public var whoopsGlobalState: Int
-internal struct TheFez {}
-private func doTheThings(things: [Thing]) {}
-```
-
-- However, definitions within those can leave access control implicit, where appropriate:
-> Don't add modifiers (like `internal`) except on top level, if they're already the default. Similarly, don't repeat the access modifier when overriding a method.
-
-```swift
-internal struct TheFez {
-    var owner: Person = Joshaber()
-    override func kickTheFez() {
-        //
+    func displayName() -> String {
+        name
     }
 }
 ```
 
-- Don't separate your class implementation in as many extensions as different access control levels you need:
-
-**Preferred:**
-
 ```swift
-struct iAmAStruct {
-    func doSomething { … } // public
-    private func doSomethingPrivate { … } // private
+// AVOID
+struct UserProfile {
+    let id: UserID
+
+
+    let name: String
 }
 ```
 
-**Not Preferred:**
+### Alignment Rules
+- Do not align code using whitespace to form visual columns
+- Avoid manual alignment that depends on spacing
+- Let structure be expressed through declarations, not spacing
 
 ```swift
-struct iAmAStruct {
-    func doSomething { … } // public
-}
+// GOOD
+let shortName = "A"
+let longerName = "Alice"
+```
 
-private extension iAmAStruct {
-    func doSomethingPrivate { … } // private
+```swift
+// AVOID
+let shortName  = "A"
+let longerName = "Alice"
+```
+
+### Forbidden Whitespace
+The following are forbidden in all Swift source files:
+
+- Trailing whitespace
+- Multiple spaces used for alignment
+- Blank lines at the beginning or end of files
+
+Forbidden whitespace must be removed automatically by tooling.
+
+Whitespace rules exist to keep diffs clean, intent clear, and formatting deterministic across editors and platforms.
+
+## Line Wrapping
+
+Line wrapping is used to **preserve readability** and **respect the maximum line length** without obscuring intent.
+
+Line wrapping must prioritize clarity over compactness.
+
+---
+
+### General Rules
+
+- Wrap lines only when exceeding the maximum line length
+- Prefer wrapping at logical boundaries
+- Wrapped lines must be indented consistently
+- Do not wrap lines to achieve visual symmetry
+
+### Function Declarations
+
+- Wrap parameters onto separate lines when they do not fit comfortably
+- Each parameter appears on its own line
+- Closing parenthesis aligns with the declaration
+
+```swift
+// GOOD
+func fetchUserProfile(
+    id: UserID,
+    includeSettings: Bool,
+    cachePolicy: CachePolicy
+) async throws -> UserProfile
+```
+
+```swift
+// AVOID
+func fetchUserProfile(id: UserID, includeSettings: Bool, cachePolicy: CachePolicy) async throws -> UserProfile
+```
+
+### Function Calls
+- Follow the same rules as function declarations
+- One argument per line when wrapped
+- Do not mix wrapped and unwrapped arguments
+
+```swift
+// GOOD
+fetchUserProfile(
+    id: userID,
+    includeSettings: true,
+    cachePolicy: .reloadIgnoringCache
+)
+```
+
+```swift
+// AVOID
+fetchUserProfile(id: userID,
+                 includeSettings: true,
+                 cachePolicy: .reloadIgnoringCache)
+```
+
+### Type Declarations
+
+- Prefer keeping inheritance and protocol conformance lists on a **single line**
+- Wrap only when the line length limit is exceeded
+- Do not wrap solely for visual symmetry
+
+```swift
+// GOOD
+struct UserProfile: Codable, Equatable, Sendable {
 }
 ```
 
-- Authors should use `private` when possible and only `fileprivate` when it is required for improved encapsulation. For example when it is used by an extension in the same file. `private` and `fileprivate` mean the same thing at file scope, and in this case you should prefer `private`.
-
-_Rationale:_ It's rarely appropriate for top-level definitions to be specifically `internal`, and being explicit ensures that careful thought goes into that decision. Within a definition, reusing the same access control specifier is just duplicative, and the default is usually reasonable.
-
--
-
-### Switch
-- Switch statements should have each case statement not indented and all code executed for that case indented below:
-
 ```swift
-var value = 2
-var test: String?
-
-switch value {
-case 1:
-    test = "abc"
-default:
-    test = "xyz"
+// AVOID: Unnecessary wrapping
+struct UserProfile:
+    Codable,
+    Equatable,
+    Sendable {
 }
 ```
 
-- If you want to match multiple values within an object or struct, create a tuple with the two values:
+Wrapping is justified only when required by line length constraints.
+
+
+### Control Flow Statements
+
+- Wrap conditions when they exceed the line limit
+- Each condition appears on its own line
+- Logical operators begin the wrapped line
 
 ```swift
-struct TestValue {
-    enum Val {
-        case a
-        case b
-    }
-    var value: Val = .a
-    var detail: String = "Test"
-}
-var testValue = TestValue()
-
-switch (testValue.value, testValue.detail) {
-case (.a, "Test"):
-    println("This is printed")
-default:
-    println("This is not printed")
+// GOOD
+if isEnabled
+    && isAuthorized
+    && hasValidSession {
+    proceed()
 }
 ```
 
-- If you have a default case that shouldn't be reached, use an assert.
-
 ```swift
-var test = "Hello"
-
-switch test {
-case "Hello"
-    print("It prints")
-case "World"
-    print("It doesn't")
-default:
-    assert(false, "Useful message for developer")
+// AVOID
+if isEnabled && isAuthorized &&
+   hasValidSession {
+    proceed()
 }
 ```
 
--
+### Expressions
+
+Expressions should remain **on a single line whenever they fit within the line length limit**.
+
+- Do **not** split expressions unless required by line length
+- Do **not** split identifiers or literals
+- Preserve natural evaluation order when wrapping
+- Prefer readability over aggressive line breaking
+
+When wrapping is required:
+- Break lines at operators
+- Keep operands visually grouped
+- Avoid wrapping that obscures operator precedence
+
+```swift
+// GOOD: Fits on one line
+let result = baseValue + adjustment * multiplier
+```
+
+```swift
+// GOOD: Wrapped only because of line length
+let result =
+    baseValue
+    + adjustment
+    * multiplier
+```
+
+```swift
+// AVOID: Unnecessary wrapping
+let result =
+    baseValue + adjustment * multiplier
+```
+
+```swift
+// AVOID: Splitting identifiers or literals
+let result = base
+    Value + adjustment
+```
+
+Expressions should be wrapped only when necessary and in a way that preserves clear, left-to-right evaluation.
+
+### Generics & where Clauses
+
+- Place where clauses on a new line when complex
+- Each constraint appears on its own line when wrapped
+
+```swift
+// GOOD
+func process<T>(
+    _ value: T
+) where
+    T: Decodable,
+    T: Sendable {
+}
+```
+
+```swift
+// AVOID
+func process<T>(_ value: T) where T: Decodable, T: Sendable {
+}
+```
+
+Line wrapping should make code easier to scan and review.
+If wrapping reduces clarity, reconsider the structure of the code.
+
+## Naming
+
+Naming follows the **Swift API Design Guidelines** and prioritizes clarity, consistency, and intent at the call site.
+
+Names are part of the API. Poor naming is considered a correctness issue.
+
+---
+
+### General Rules
+
+- Names must be clear, descriptive, and unambiguous
+- Prefer full words over abbreviations
+- Avoid encoding type information in names
+- Do not use prefixes for namespacing
+- Choose names that read naturally at the point of use
+
+### Identifiers
+
+- Use ASCII characters only
+- Avoid symbols and emojis in identifiers
+- Do not use reserved or overloaded terminology inconsistently
+
+```swift
+// GOOD
+let userProfile: UserProfile
+
+// AVOID
+let usrPrfl: UserProfile
+```
+
+### Types
+
+- Use UpperCamelCase
+- Use nouns or noun phrases
+- Avoid abbreviations unless universally understood
+
+```swift
+struct UserProfile { }
+enum NetworkError { }
+final class ImageLoader { }
+```
+
+```swift
+// AVOID
+struct user_profile { }
+class ImgLdr { }
+```
+
+### Properties
+
+- Use lowerCamelCase
+- Use nouns for values
+- Use adjectives or boolean prefixes (is, has, can) for flags
+
+```swift
+let title: String
+let isEnabled: Bool
+let hasPermission: Bool
+```
+
+```swift
+// AVOID
+let Title: String
+let enabledFlag: Bool
+```
+
+### Functions & Methods
+
+- Use lowerCamelCase
+- Use verb-based names
+- Names must read naturally at the call site
+
+```swift
+func loadUserProfile(id: UserID)
+func refreshCache()
+```
+
+```swift
+// AVOID
+func userProfileLoad(id: UserID)
+func doRefresh()
+```
+
+### Argument Labels
+
+- Use argument labels to clarify intent
+- Omit labels only when meaning is obvious
+
+```swift
+// GOOD
+updateUserProfile(id: userID, name: name)
+
+// AVOID
+updateUserProfile(userID, name)
+```
+
+### Initializers
+
+- Use clear, labeled parameters
+- Avoid ambiguous or overloaded initializers
+
+```swift
+init(id: UserID, name: String)
+```
+
+```swift
+// AVOID
+init(_ id: UserID, _ name: String)
+```
+
+### Protocols
+
+- Name protocols after capabilities or roles
+- Use adjectives or nouns ending in -able when appropriate
+
+```swift
+protocol Cacheable { }
+protocol Identifiable { }
+```
+
+```swift
+// AVOID
+protocol CacheProtocol { }
+protocol UserManagerProtocol { }
+```
+
+### Generics
+
+- Use descriptive names for generic parameters
+- Use single-letter names only for well-known conventions
+
+```swift
+// GOOD
+struct Repository<Element> { }
+
+// ACCEPTABLE
+struct Stack<T> { }
+```
+
+```swift
+// AVOID
+struct Repository<X> { }
+```
+
+### Abbreviations & Acronyms
+- Avoid abbreviations unless they are widely understood
+- Acronyms of three or more letters are capitalized fully
+
+```swift
+let url: URL
+let htmlContent: String
+```
+
+```swift
+// AVOID
+let uRL: URL
+let HtmlContent: String
+```
+
+### Static & Class Members
+
+- Follow the same naming rules as instance members
+- Avoid using type names in member names
+
+```swift
+static let defaultTimeout: TimeInterval
+```
+
+```swift
+// AVOID
+static let userProfileDefaultTimeout: TimeInterval
+```
+
+### Global Constants
+
+- Avoid global constants when possible
+- If required, use clear, scoped names
+
+```swift
+enum Defaults {
+    static let maxRetryCount = 3
+}
+```
+
+### Delegate & Data Source Methods
+
+- Follow Apple’s established naming conventions
+- Method names must clearly express timing and responsibility
+
+```swift
+func userProfileDidUpdate(_ profile: UserProfile)
+func userProfileWillDelete(_ profile: UserProfile)
+```
+
+Naming consistency is enforced across the entire codebase.
+
+If a name requires explanation, it is likely incorrect.
+
+
+
+## Language Fundamentals
+
+This section defines **core Swift language usage rules** that apply across all codebases.
+
+---
+
+### Immutability (`let` vs `var`)
+
+- Use `let` by default
+- Use `var` only when mutation is required
+- Prefer immutable data structures and value semantics
+
+```swift
+// GOOD
+let timeout: TimeInterval = 10
+
+// AVOID
+var timeout: TimeInterval = 10
+```
+
+### Type Inference
+
+- Prefer type inference when the type is obvious
+- Explicitly specify types at API boundaries and when clarity improves
+
+```swift
+// GOOD
+let count = 5
+
+// GOOD (API boundary)
+let count: Int = 5
+```
+
+```swift
+// AVOID: Unnecessary explicit type
+let count: Int = Int(5)
+```
+
+### Optionals
+
+- Use optionals to represent the absence of a value
+- Avoid deeply nested optionals
+- Prefer early exit with `guard`
+
+```swift
+// GOOD
+guard let token else { return }
+```
+
+```swift
+// AVOID
+if token != nil {
+    use(token!)
+}
+```
+
+
+### Implicitly Unwrapped Optionals
+
+- Implicitly unwrapped optionals are forbidden
+- Do not use ! for stored properties
+
+```swift
+// AVOID
+var token: String!
+```
+
+If a value is required, it must be:
+
+- Non-optional
+- Provided at initialization time
+- Or handled explicitly through control flow
 
 ### Control Flow
 
-- If, for, while, do statements shouldn't wrap their conditionals in parentheses.
+Control flow must prioritize **clarity, exhaustiveness, and explicit intent**.
 
-> ⚠️ Warning (SwiftLint Standard rule `control_statement`) 
+- Prefer `guard` for early exits
+- Prefer `switch` over long or complex `if-else` chains
+- Avoid deeply nested conditional logic
 
-**Preferred:**
+#### Early Exit with guard
+Use `guard` to handle invalid conditions up front and keep the main logic linear.
 
 ```swift
-if carSpeed > 45.5 { 
-    … 
+// GOOD
+guard isAuthorized else {
+    showUnauthorized()
+    return
+}
+
+loadProtectedData()
+```
+
+#### Use `switch` when:
+- Handling enums
+- Matching multiple conditions
+- Exhaustiveness improves safety and readability
+
+```swift
+// GOOD
+switch state {
+case .loading:
+    showLoading()
+case .loaded(let data):
+    showData(data)
+case .failed(let error):
+    showError(error)
 }
 ```
 
-**Not Preferred:**
+`switch` statements must be exhaustive.
+
+Use a default case only when all remaining cases are intentionally handled the same way.
+
+#### Avoiding if-else Chains
+
+Long `if-else` chains reduce readability and are prone to errors.
 
 ```swift
-if (carSpeed > 45.5) { 
-    … 
+// AVOID
+if state == .loading {
+    showLoading()
+} else if state == .loaded {
+    showData()
+} else if state == .failed {
+    showError()
 }
 ```
 
-- If and guard statements should not be declared in one line only, even if they contain only one instruction. 
+### Trailing Closure Rules
 
-_Rationale:_ Emphasize the content of the `else` condition and make it easier to debug, keep the style consistent with other control flow statements always declared multi-line (e.g. if, for, etc.) including guard statements themselves when they contain more than one line. 
+Trailing closures are used to improve **call-site readability** when working with closure parameters.  
+They must make intent clearer, not shorter.
 
-> 🚫 Error (SwiftLint Custom rule to define) 
+#### Single Closure Rule
 
-**Preferred:**
+- Use trailing closure syntax when a function accepts **a single closure**
+- The closure must be the **last parameter**
+- Trailing closure usage must read naturally at the call site
 
 ```swift
-guard let variable = variable else {
+// GOOD
+items.forEach { item in
+    process(item)
+}
+```
+
+```swift
+// AVOID
+perform(action: { doWork() })
+```
+
+#### Multiple Closures
+When a function accepts multiple closure parameters, use named trailing closures.
+This is the preferred form for multiple closures in modern Swift.
+
+```swift
+// GOOD
+loadData {
+    handleSuccess()
+} onFailure: { error in
+    handleError(error)
+}
+```
+
+```swift
+// AVOID
+loadData(
+    onSuccess: {
+        handleSuccess()
+    },
+    onFailure: { error in
+        handleError(error)
+    }
+)
+```
+
+#### Readability Over Brevity
+
+Prefer the form that is **most idiomatic and readable at the call site**, even if it is more concise.
+
+For APIs where the trailing closure clearly represents the primary behavior (such as animations), **trailing closure syntax is preferred**.
+
+```swift
+// PREFERRED
+animate(duration: 0.3) {
+    view.alpha = 1
+}
+```
+
+```swift
+// AVOID: Verbose without added clarity
+animate(
+    duration: 0.3,
+    animations: {
+        view.alpha = 1
+    }
+)
+```
+
+#### Nested Trailing Closures
+- Avoid deeply nested trailing closures
+- Extract logic into named functions or variables
+
+```swift
+// AVOID
+items.filter {
+    $0.isValid
+}.map {
+    transform($0)
+}.forEach {
+    save($0)
+}
+```
+
+```swift
+// GOOD
+let validItems = items.filter(isValid)
+let transformed = validItems.map(transform)
+transformed.forEach(save)
+```
+
+#### Trailing Closures and Async
+- Do not use trailing closures to simulate asynchronous APIs
+- Prefer `async` / `await` over callback-style closures
+
+```swift
+// GOOD
+let data = try await loadData()
+```
+
+```swift
+// AVOID
+loadData { data in
+    handle(data)
+}
+```
+
+### Pattern Matching
+
+- Prefer pattern matching for clarity
+- `switch` statements must be exhaustive
+
+```swift
+switch result {
+case .success(let value):
+    handle(value)
+case .failure(let error):
+    handle(error)
+}
+```
+
+### Tuples
+
+- Use tuples only for short-lived, local grouping
+- Do not use tuples as public return types or stored properties
+
+```swift
+// GOOD
+let (x, y) = point
+```
+
+```swift
+// AVOID
+func fetch() -> (Int, String)
+```
+
+#### Tuple Pattern Matching
+
+Tuples may be used in `switch` statements when matching **multiple related values** improves clarity.
+
+- Use tuple pattern matching only when values are conceptually related
+- Prefer exhaustive `switch` statements
+- Avoid tuple patterns that obscure intent
+
+```swift
+// GOOD
+switch (state, isRetrying) {
+case (.loading, _):
+    showLoading()
+case (.failed, true):
+    retry()
+case (.failed, false):
+    showError()
+case (.loaded, _):
+    showContent()
+}
+```
+
+```swift
+// AVOID: Tuple pattern hides intent
+switch (state, isRetrying) {
+case let (.failed, retry):
+    handle(state, retry)
+}
+```
+
+#### Wildcard (`_`) Usage in Tuples
+- Use `_` only when a value is truly irrelevant
+- Avoid using `_` for multiple values in the same pattern
+
+```swift
+// GOOD
+case (.success, _):
+```
+
+```swift
+// AVOID
+case (_, _):
+```
+
+Overuse of `_` reduces readability and exhaustiveness clarity.
+
+#### `where` Clauses with Tuples
+Use `where` clauses to add simple constraints, not complex logic.
+
+```swift
+// GOOD
+switch point {
+case let (x, y) where x == y:
+    handleDiagonal()
+default:
+    handleOther()
+}
+```
+
+```swift
+// AVOID
+case let (x, y) where x > 0 && y > 0 && x.isMultiple(of: 2):
+```
+
+Extract complex conditions into named functions.
+
+#### Avoid Tuple Overuse
+Tuples must not:
+- Replace domain types
+- Encode business logic compactly
+- Grow beyond two or three elements
+
+```swift
+// AVOID
+let result: (Int, String, Bool, Date)
+```
+
+If a tuple requires documentation, it should be a struct.
+
+
+
+### Typealiases
+
+- Use `typealias` to clarify intent
+- Avoid aliases that obscure meaning or hide structure
+
+```swift
+typealias UserID = UUID
+```
+
+```swift
+// AVOID
+typealias Payload = [String: Any]
+```
+
+### String & Literal Rules
+
+This section defines strict rules for string and literal usage to ensure correctness, readability, and predictable behavior across tools and platforms.
+
+#### String Literals
+- Prefer plain string literals (`"..."`) for simple text
+- Use multiline string literals (`"""`) only when structure or formatting matters
+- Avoid unnecessary interpolation
+
+```swift
+// GOOD
+let title = "User Profile"
+
+// AVOID
+let title = "\( "User" ) Profile"
+```
+
+#### Multiline String Literals
+Use multiline strings only for:
+- Templates
+  - Large blocks of text
+  - Test fixtures
+- Do not indent content for visual alignment unless indentation is meaningful
+
+```swift
+let message = """
+Welcome back.
+Please sign in to continue.
+"""
+```
+
+```swift
+// AVOID: Accidental indentation
+let message = """
+    Welcome back.
+    Please sign in to continue.
+"""
+```
+
+#### String Interpolation
+- Use interpolation only when it improves clarity
+- Avoid complex expressions inside interpolation
+- Do not perform logic inside interpolation
+
+```swift
+// GOOD
+let message = "Hello, \(user.name)"
+```
+
+```swift
+// AVOID
+let message = "Total: \(items.filter { $0.isValid }.count)"
+```
+
+Precompute values instead.
+
+#### Unicode and Escapes
+- Unicode characters are allowed when they improve readability
+- Avoid mixing visible Unicode with escape sequences for the same purpose
+- Invisible or control characters must use explicit escapes
+
+```swift
+// GOOD
+let title = "Café"
+```
+
+```swift
+// GOOD
+let newline = "\n"
+```
+
+```swift
+// AVOID: Mixed representation
+let text = "Caf\u{00E9}"
+```
+
+#### Invisible Characters
+- Invisible Unicode characters (zero-width space, variation selectors) must not appear directly in source
+- Use escape sequences when such characters are required
+
+```swift
+// GOOD
+let zeroWidthSpace = "\u{200B}"
+```
+
+#### Numeric Literals
+- Use `_` to group digits for readability
+- Group digits consistently by thousands or domain meaning
+
+```swift
+let maxUsers = 10_000
+let timeoutInNanoseconds = 1_000_000_000
+```
+
+```swift
+// AVOID
+let value = 10000
+let other = 1_00_00
+```
+
+#### Boolean Literals
+- Do not compare booleans explicitly to `true` or `false`
+
+```swift
+// GOOD
+if isEnabled {
+}
+```
+
+```swift
+// AVOID
+if isEnabled == true {
+}
+```
+
+#### Collection Literals
+- Prefer literal syntax over initializers when clear
+- Use explicit type annotations when the literal is ambiguous
+
+```swift
+// GOOD
+let values = [1, 2, 3]
+```
+
+```swift
+// GOOD (clarity)
+let values: [Int] = []
+```
+
+```swift
+// AVOID
+let values = Array<Int>()
+```
+
+#### Dictionary Literals
+
+- Keys and values must be clearly readable
+- Avoid deeply nested dictionary literals
+- Do not use `[String: Any]` as a general-purpose structure
+
+```swift
+let headers = [
+    "Accept": "application/json",
+    "Authorization": token,
+]
+```
+
+#### Literal Consistency
+- Use the same literal style for the same concept across the codebase
+- Do not mix numeric bases or representations without reason
+
+```swift
+// GOOD
+let mask = 0b1101
+```
+
+```swift
+// AVOID
+let mask = 13
+```
+
+## Types & APIs
+
+This section defines rules for designing **clear, safe, and stable APIs** using Swift’s type system.
+
+---
+
+### Struct vs Class
+
+- Prefer `struct` by default
+- Use `class` only when **identity**, **shared mutable state**, or **inheritance** is required
+- Do not use classes solely for reference semantics without justification
+
+```swift
+// GOOD
+struct ViewState {
+    let title: String
+}
+```
+
+```swift
+// ACCEPTABLE
+final class ImageCache {
+    private var storage: [URL: Image] = [:]
+}
+```
+
+### Enums
+
+- Use enums to model finite states
+- Prefer associated values over parallel data structures
+- Keep cases concise and expressive
+
+```swift
+enum LoadState {
+    case idle
+    case loading
+    case loaded(Data)
+    case failed(Error)
+}
+```
+
+- Avoid “catch-all” cases that hide intent
+
+```swift
+// AVOID
+enum Status {
+    case ok
+    case error
+    case unknown
+}
+```
+
+### Enum Case Layout Rules
+
+Enum cases must be laid out to maximize **readability**, **exhaustiveness**, and **long-term API stability**.
+
+#### One Case per Line
+
+- Declare **one enum case per line**
+- Do not combine multiple cases on a single line
+
+```swift
+// GOOD
+enum LoadState {
+    case idle
+    case loading
+    case loaded
+    case failed
+}
+```
+
+```swift
+// AVOID
+enum LoadState {
+    case idle, loading, loaded, failed
+}
+```
+
+#### Associated Values Formatting
+- Each case with associated values appears on its own line
+- Prefer named associated values for clarity
+
+```swift
+// GOOD
+enum ResultState {
+    case success(value: Data)
+    case failure(error: Error)
+}
+```
+
+```swift
+// AVOID
+enum ResultState {
+    case success(Data)
+    case failure(Error)
+}
+```
+
+#### Grouping Related Cases
+- Group logically related cases together
+- Order cases to reflect lifecycle or state flow
+- Use a blank line to separate groups only when it improves readability
+
+```swift
+enum ConnectionState {
+    case disconnected
+    case connecting
+    case connected
+
+    case failed(error: Error)
+}
+```
+
+#### Raw Value Enums
+- Declare raw values explicitly when clarity improves
+- Do not rely on implicit raw value ordering for behavior
+
+```swift
+enum HTTPMethod: String {
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
+}
+```
+
+#### Case Order Stability
+- Do not reorder cases without a strong reason
+- Case order affects diffs, reviews, and public API expectations
+
+#### Exhaustiveness Expectations
+- Design enums to support exhaustive `switch` statements
+- Avoid “catch-all” cases unless explicitly justified
+
+```swift
+// AVOID
+enum Status {
+    case success
+    case failure
+    case unknown
+}
+```
+
+
+### Protocol Design
+
+- Design protocols around capabilities, not implementations
+- Keep protocols small and focused
+- Avoid “god protocols”
+
+```swift
+protocol Cacheable {
+    func load() throws
+    func save() throws
+}
+```
+
+```swift
+// AVOID
+protocol UserManagerProtocol {
+    func load()
+    func save()
+    func delete()
+    func refresh()
+}
+```
+
+### Extensions
+
+- Use extensions to organize functionality
+- Group protocol conformances in dedicated extensions
+
+```swift
+extension UserProfile: Codable {
+}
+```
+```swift
+extension UserProfile {
+    func displayName() -> String {
+        "\(firstName) \(lastName)"
+    }
+}
+```
+
+### Initializers
+
+- Prefer explicit, labeled initializers
+- Avoid ambiguous or overloaded initializers
+- Do not use unlabeled parameters unless meaning is obvious
+
+```swift
+init(id: UserID, name: String)
+```
+
+```swift
+// AVOID
+init(_ id: UserID, _ name: String)
+```
+
+### Factory Methods
+
+- Use factory methods when initialization requires logic
+- Factory methods must clearly describe the created variant
+
+```swift
+static func cached(_ value: Value) -> CacheEntry
+```
+
+```swift
+// AVOID
+static func create(_ value: Value) -> CacheEntry
+```
+
+### Operators
+
+- Avoid custom operators unless they model a well-understood domain concept
+- Operator behavior must be unsurprising
+- Prefer named functions for clarity
+
+```swift
+// AVOID
+infix operator <~>
+```
+
+### Public API Design
+
+- Public APIs must be minimal and intentional
+- Do not expose implementation details
+- Favor immutability in public interfaces
+
+```swift
+public struct Configuration {
+    public let timeout: TimeInterval
+}
+```
+
+```swift
+// AVOID
+public var internalState: [String: Any]
+```
+
+API design decisions are hard to change.
+
+Favor clarity, stability, and long-term maintainability over convenience.
+
+## Initializers & Instantiation
+
+This section defines rules for **object creation**, **initializer behavior**, and **construction semantics**.  
+It complements *Types & APIs* by focusing on **how instances are created**, not just how they are named.
+
+Initialization must be **deterministic, explicit, and side-effect free**.
+
+---
+
+### Designated vs Convenience Initializers
+
+- Prefer **designated initializers**
+- Avoid `convenience init` unless required by:
+  - Class inheritance
+  - Objective-C interop
+- `convenience init` must delegate immediately and perform no additional logic
+
+```swift
+// GOOD
+final class Cache {
+    let capacity: Int
+
+    init(capacity: Int) {
+        self.capacity = capacity
+    }
+}
+```
+
+```swift
+// AVOID
+convenience init() {
+    self.init(capacity: 100)
+    preload() // side effect
+}
+```
+
+### Memberwise Initializers
+- Rely on compiler-synthesized memberwise initializers for `struct`s when possible
+- Defining a custom initializer disables the synthesized one
+- Be intentional when exposing memberwise initializers in public APIs
+
+```swift
+// GOOD
+struct Configuration {
+    let timeout: TimeInterval
+    let retries: Int
+}
+```
+
+```swift
+// AVOID: Unnecessary custom init
+struct Configuration {
+    let timeout: TimeInterval
+    let retries: Int
+
+    init(timeout: TimeInterval, retries: Int) {
+        self.timeout = timeout
+        self.retries = retries
+    }
+}
+```
+
+If a `struct` is `public`, define an explicit initializer only when:
+- Validation is required
+- Invariants must be enforced
+- Defaults alone are insufficient
+
+### Failable Initializers (`init?`)
+- Use failable initializers only when failure is expected and local
+- Prefer `throws` when failure needs explanation or recovery
+- Do not use `init?` for validation that can throw meaningful errors
+
+```swift
+// ACCEPTABLE
+init?(rawValue: String)
+```
+
+```swift
+// PREFERRED
+init(value: String) throws
+```
+
+Avoid chaining failable initializers that obscure failure reasons.
+
+### Default Values vs Initializer Overloads
+- Prefer default parameter values over multiple initializers
+- Avoid initializer explosion
+
+```swift
+// GOOD
+init(timeout: TimeInterval = 10, retries: Int = 3)
+```
+
+```swift
+// AVOID
+init(timeout: TimeInterval)
+init(timeout: TimeInterval, retries: Int)
+init(timeout: TimeInterval, retries: Int, cache: Bool)
+```
+
+Defaults improve readability and reduce API surface area.
+
+### Initialization Side Effects
+Initializers must be **pure construction only**.
+
+Forbidden inside `init`:
+- Network calls
+- Disk I/O
+- Async work
+- Task creation
+- Global state mutation
+- Singleton access
+
+```swift
+// FORBIDDEN
+init() {
+    Task {
+        await load()
+    }
+}
+```
+
+Initialization must:
+- Assign stored properties
+- Enforce invariants
+- Perform lightweight validation only
+
+### Async Setup and Factories
+- Initializers cannot be `async`
+- Use factory methods for async setup
+
+```swift
+// GOOD
+static func load() async throws -> Repository
+```
+
+```swift
+// AVOID
+init() async throws
+```
+
+Factories clearly communicate suspension and failure.
+
+### Instantiation Consistency
+- Object creation must be deterministic
+- Initializers must not depend on:
+  - Global mutable state
+  - Singletons
+  - Hidden environment assumptions
+
+```swift
+// AVOID
+init() {
+    self.client = NetworkClient.shared
+}
+```
+
+Dependencies must be injected explicitly.
+
+### Actor Initialization
+- Actors may initialize stored properties only
+- Do not perform cross-actor calls in `init`
+- Use post-init async setup if required
+
+```swift
+actor Cache {
+    private let capacity: Int
+
+    init(capacity: Int) {
+        self.capacity = capacity
+    }
+}
+```
+
+### Instantiation Clarity
+- Prefer explicit construction over helpers with hidden behavior
+- Instance creation must be obvious at the call site
+
+```swift
+// GOOD
+let cache = Cache(capacity: 100)
+```
+
+```swift
+// AVOID
+let cache = makeDefaultCache()
+```
+
+Unless the factory name clearly communicates behavior.
+
+## Concurrency
+
+Concurrency rules prioritize **safety, clarity, and correctness** under **Swift 6 strict concurrency**.
+
+All concurrent code must be written assuming **data races are compile-time errors**, not runtime bugs.
+
+---
+
+### async / await
+
+- Use `async` / `await` exclusively for asynchronous work
+- Completion handlers are forbidden in new code
+- Async functions must clearly express suspension points
+
+```swift
+// GOOD
+func loadUser() async throws -> User
+```
+
+```swift
+// AVOID
+func loadUser(completion: @escaping (Result<User, Error>) -> Void)
+```
+
+Async functions must:
+
+- Be cancellable when appropriate
+- Propagate errors using `throws`
+
+### Tasks
+
+- Use `Task {}` only at concurrency boundaries
+- Avoid creating detached tasks without strong justification
+- Prefer structured concurrency
+
+```swift
+// GOOD
+Task {
+    await viewModel.load()
+}
+```
+
+```swift
+// AVOID
+Task.detached {
+    await load()
+}
+```
+
+Detached tasks are allowed only when:
+
+- No parent task exists
+- Cancellation and lifetime are explicitly handled
+
+
+### Cancellation
+
+- Long-running async operations must support cancellation
+- Check for cancellation at logical boundaries
+
+```swift
+try Task.checkCancellation()
+```
+
+```swift
+if Task.isCancelled {
     return
 }
 ```
 
-**Not Preferred:**
+Ignoring cancellation is considered a correctness issue.
+
+
+### Actors
+
+- Use actors to protect mutable shared state
+- Do not manually synchronize actor-protected state
+- Actor boundaries must be explicit
 
 ```swift
-guard let variable = variable else { return }
-```
+actor ImageCache {
+    private var storage: [URL: Image] = [:]
 
-- In for loops, when the index is not used, .enumerated() can be removed.
-
-> ⚠️ Warning (SwiftLint Standard rule `unused_enumerated`) 
-
-**Preferred:**
-
-```swift
-for (_, foo) in bar { … }
-```
-
-**Not Preferred:**
-
-```swift
-for (_, foo) in bar.enumerated() { … }
-```
-
--
-
-### Properties
-
-- Variable names should be precise, self-explanatory and keep a reasonable length.
-
-> ⚠️ > 70 characters, 🚫 > 100 characters (SwiftLint Standard rule `variable_name`)
-
-- If making a read-only computed variable, provide the getter without the get {} around it:
-
-> ⚠️ Warning (SwiftLint Standard rule `implicit_getter`) 
-
-```swift
-var computedProp: String {
-    return someBool ? "Hello" : "Bye bye"
-}
-```
-
-- If making a computed variable that is readwrite, have get {} and set{} indented:
-
-```swift
-var computedProp: String {
-    get {
-        if someBool {
-            return "Hello"
-        }
-    }
-    set {
-    	println(newValue)
+    func image(for url: URL) -> Image? {
+        storage[url]
     }
 }
 ```
 
-- Same rule as above but for willSet and didSet:
+Actors replace locks, queues, and manual synchronization.
+
+### @MainActor
+
+- Use @MainActor for UI-facing state and logic
+- Do not perform heavy work on the main actor
 
 ```swift
-var property = 10 {
-    willSet {
-        println("willSet")
-    }
-    didSet {
-        println("didSet")
-    }
-}
-```
-
-- Though you can create a custom name for the new or old value for willSet/didSet and set, use the standard newValue/oldValue identifiers that are provided by default:
-
-```swift
-var property = 10 {
-    willSet {
-        if newValue == 10 {
-            println("It’s 10")
-        }
-    }
-    didSet {
-        if oldValue == 10 {
-            println("It was 10")
-        }
+@MainActor
+final class ViewModel {
+    func refresh() async {
     }
 }
 ```
 
-- Create class constants as static for any strings or constant values.
+Avoid hopping between actors unnecessarily.
+
+### Isolation
+
+- Respect actor isolation boundaries
+- Avoid `nonisolated` unless strictly required
 
 ```swift
-class Test {
-    static let ConstantValue: String = "TestString"
+await cache.image(for: url)
+```
+
+Breaking isolation rules is forbidden.
+
+### Sendable
+
+- All types crossing concurrency boundaries must conform to `Sendable`
+- Prefer compiler-checked `Sendable` conformance
+- Avoid `@unchecked Sendable` as much as possible
+
+```swift
+struct Request: Sendable {
+    let id: UUID
 }
 ```
 
-- Prefer creating Computed Properties for any methods which return something and take no parameters.
+```swift
+// AVOID
+final class State: @unchecked Sendable {
+}
+```
+
+### @Sendable Closures
+
+- Closures passed across concurrency boundaries must be `@Sendable`
+- Captured values must be immutable or `Sendable`
 
 ```swift
-var computedProp: String {
-    if someBool {
-        return "Hello"
-    } else {
-        return "No"
+let work: @Sendable () async -> Void = {
+    await perform()
+}
+```
+
+### Thread Safety Rules
+
+- Shared mutable state outside actors is forbidden
+- Do not use locks, semaphores, or dispatch queues for synchronization
+- Actors are the default synchronization primitive
+
+
+Concurrency code must be correct by construction.
+
+If concurrency safety is unclear, the design must be revisited.
+
+
+## Error Handling
+
+Error handling must be **explicit, intentional, and type-driven**.  
+Errors are part of the API contract and must be designed, documented, and propagated deliberately.
+
+---
+
+### Error Types
+
+- Define errors as concrete `enum` types conforming to `Error`
+- Error cases must be descriptive and domain-specific
+- Avoid throwing opaque or generic errors without context
+
+```swift
+enum NetworkError: Error {
+    case offline
+    case unauthorized
+    case timeout
+}
+```
+
+```swift
+// AVOID: No defined error domain
+func fetchData() throws -> Data
+```
+
+Functions that throw must define or document the error types they can produce.
+
+### Error Contracts
+
+- Public and internal APIs must clearly communicate failure modes
+- Thrown errors must be:
+  - Defined via a concrete error type, or
+  - Explicitly documented in the API contract
+
+
+```swift
+/// Loads user data.
+/// - Throws: `NetworkError.offline` if no connection is available.
+///           `NetworkError.unauthorized` if authentication fails.
+func loadUser() async throws -> User
+```
+
+Undocumented error behavior is forbidden.
+
+
+### `throws` vs `Result`
+
+- Prefer `throws` for synchronous and `async` functions
+- Use `Result` only when required by:
+  - Legacy APIs
+  - Callback-based interfaces
+  - Value-based error composition
+
+
+```swift
+// GOOD
+func loadData() async throws -> Data
+```
+
+```swift
+// ACCEPTABLE (API boundary)
+func loadData(completion: (Result<Data, NetworkError>) -> Void)
+```
+
+Do not wrap `throws` inside `Result` without a strong reason.
+
+
+### `try` Usage
+
+- Use `try` for recoverable failures
+- Use `try?` only when failure is intentionally ignored and safe
+- `try!` is forbidden
+
+```swift
+// GOOD
+let data = try loadData()
+```
+
+```swift
+// ACCEPTABLE
+let cached = try? loadCachedData()
+```
+
+```swift
+// FORBIDDEN
+let data = try! loadData()
+```
+
+### Error Propagation
+
+- Propagate errors upward when the caller can handle them
+- Do not silently swallow errors
+- Catch errors only when meaningful handling or mapping occurs
+
+```swift
+func refresh() async throws {
+    try await service.load()
+}
+```
+
+```swift
+// AVOID: Swallowing errors
+do {
+    try load()
+} catch {
+}
+```
+
+### Error Mapping
+
+- Map low-level errors to higher-level domain errors at boundaries
+- Do not leak implementation-specific errors across layers or modules
+
+```swift
+func fetchUser() async throws -> User {
+    do {
+        return try await api.fetch()
+    } catch {
+        throw UserError.loadingFailed
     }
 }
 ```
 
-- It is acceptable to define multiple variables and structures on a single line if they share a common purpose / context.
+Error mapping must preserve intent and avoid information loss when possible.
+
+
+### Error Handling in Control Flow
+
+- Handle specific error cases explicitly
+- Prefer `switch` or specific `catch` clauses
+- Avoid broad `catch` blocks when behavior differs by error type
 
 ```swift
-class Circle {
-    var x: Int = 0, y: Int = 0
+do {
+    try perform()
+} catch NetworkError.offline {
+    showOfflineMessage()
+} catch {
+    showGenericError()
 }
 ```
 
-- Prefer using properties or methods that describe best what the code is doing. This results in more precise and self explanatory code.
+### Fatal Errors
 
-> ⚠️ Warning (SwiftLint Standard rules `syntactic_sugar` and `swift_generic_syntax`) 
-
-**Preferred:**
+- `fatalError` is forbidden in production code
+- Allowed only for:
+  - Unreachable states
+  - Programmer errors
+  - Test-only helpers
 
 ```swift
-if !valuesArray.isEmpty { ... } 
+fatalError("Unreachable code path")
 ```
 
-**Not Preferred:**
+Recoverable failures must never use fatalError.
+
+
+### Error Documentation
+
+- All throwing public APIs must document their errors
+- Documentation must describe **when** and **why** errors occur
 
 ```swift
-if valuesArray.count != 0 { ... } 
+/// - Throws: `UserError.invalidID` if the identifier is malformed.
+func loadUser(id: UserID) async throws
 ```
 
-- Prefer the shortcut versions of type declarations (also called syntactic sugars) over the full generics syntax.
+Error handling must make failure explicit, predictable, and intentional.
 
-**Preferred:**
+If a failure is possible, it must be modeled, documented, and handled deliberately.
+
+
+
+## Documentation
+
+Documentation exists to **explain intent, behavior, and contracts**.  
+It complements clear code but does not replace it.
+
+### General Rules
+
+- Write documentation for **public APIs**
+- Internal code is documented only when intent is not obvious
+- Documentation must describe **what** and **why**, not **how**
+- Keep documentation accurate and up to date
+
+Redundant or outdated documentation is worse than no documentation.
+
+### Documentation Comments
+
+- Use Swift documentation comments (`///`)
+- Place comments immediately above the documented declaration
+- Use complete sentences
 
 ```swift
-var deviceModels: [String]
-var employees: [Int: String]
-var faxNumber: Int?
+/// Loads the user profile for the given identifier.
+func loadUserProfile(id: UserID) async throws -> UserProfile
 ```
 
-**Not Preferred:**
-
 ```swift
-var deviceModels: Array<String>
-var employees: Dictionary<Int, String>
-var faxNumber: Optional<Int>
+// AVOID
+// Loads user
+func loadUserProfile(id: UserID) async throws -> UserProfile
 ```
 
-- If declaring a variable with its type, place the colon directly after the identifier with a space and then the type:
+### Public vs Internal APIs
 
-> ⚠️ Warning (SwiftLint Standard rule `colon`) 
-
-```swift
-static var testVar: String
-```
-
-- When declaring dictionary types, include a space after the colon only:
-
-> ⚠️ Warning (SwiftLint Standard rule `colon`)
+- **Public APIs** must be documented
+- **Internal APIs** should be documented only if non-trivial
+- **Private APIs** are not documented
 
 ```swift
-var someDictionary: [String: Int]
-```
-
-- Names of types and protocols are UpperCamelCase. Everything else is lowerCamelCaseWhen, e.g. when declaring a constant:
-
-```swift
-class TestClass {
-    let constantValue = 3
+/// Represents a user-visible configuration value.
+public struct Configuration {
+    public let timeout: TimeInterval
 }
 ```
 
-- IBOutlets should be private to avoid leaking UIKit to higher layers:
+### Parameters and Return Values
 
-> ⚠️ Warning (SwiftLint Standard rule `private_outlet`) 
-
-**Preferred:**
+- Document parameters when their meaning is not obvious
+- Document return values when behavior is non-trivial
 
 ```swift
-@IBOutlet private var label: UILabel? 
-@IBOutlet private(set) var label: UILabel? 
+/// Fetches data from the server.
+/// - Parameter forceRefresh: Forces a network request when true.
+/// - Returns: Cached or freshly fetched data.
+func fetchData(forceRefresh: Bool) async throws -> Data
 ```
 
-**Not Preferred:**
+### Documentation Style
+
+- Use concise, professional language
+- Avoid implementation details
+- Avoid restating type names or obvious information
 
 ```swift
-@IBOutlet var label: UILabel?
+// AVOID
+/// Loads user data from the database and parses it and assigns it to properties.
 ```
 
-- Properties declared as `IBInspectable` must be of a supported Interface Builder type to avoid runtime crashes. Note that there is no need to specify the decimal part of a `CGFloat` if none:
-	
-**Preferred:**
+### Examples in Documentation
+
+- Use examples when behavior is not obvious
+- Keep examples minimal and correct
 
 ```swift
-@IBInspectable var length: CGFloat = 5
+/// Example:
+/// ```swift
+/// let user = try await service.loadUser()
+/// ```
 ```
 
-**Not Preferred:**
+### TODOs and Notes
+
+- Avoid TODOs in documentation
+- Use issue tracking instead
+- Temporary notes must not ship in production code
+
+
+
+## Testing
+
+All tests are written using **Swift Testing**.  
+`XCTest` is not used in new or existing code.
+
+Testing rules focus on **language usage, structure, and clarity**, not test architecture.
+
+
+---
+
+### Testing Framework
+
+- Use **Swift Testing** exclusively
+- Do not introduce `XCTest` imports
+- Tests must compile and run under Swift 6 strict concurrency
+
 
 ```swift
-@IBInspectable var length: CGFloat? = 5.0 
+import Testing
 ```
 
-#### Identifiers
-	
-- To declare a set of constants not to be used for switching, use a struct:
-
 ```swift
-struct Constants {
-    static let a = "A"
-    static let b = "B"
-}
-```
-	
-- Always use `self.<parameter name>` or `self.<methodName()>` when possible, in order to distinguish instance to local variables at a glance.
-
-```swift
-class Test {
-    var a: (() -> Void)?
-    var b: Int = 3
-
-    func foo(a: () -> Void) {
-        self.a = a
-    }
-
-    func foo1() {
-        self.foo() {
-            println(self.b)
-        }
-    }
-    
-    func foo3() {
-        self.foo1()
-        self.foo1()
-        self.foo1()
-    }
-}
+// AVOID
+import XCTest
 ```
 
-- Nested `.self` usage shouldn't be used more than once on a given statement.
+### Test Suites
 
-> ⚠️ Warning (SwiftLint Custom rule `nested_self_usage`) 
-
-### Closures
-
-- Prefer not to declare closure parameters type / return type, unless it really improves clarity or if imposed by the compiler. Also, keep parameter names on same line as opening brace:
-
-```swift
-doSomethingWithCompletion() { param1, _ in
-    println("\(param1)")
-}
-```
-
-- Always use trailing closure syntax if there is a single closure as the last parameter of a method, or if a closure is the only parameter:
+- Each test file defines a single test suite
+- Test suites are declared using `@Suite`
+- The suite name must match the file name
+- Test suites are declared as `struct`
 
 ```swift
-// Definition
-func newMethod(input: Int, onComplete methodToRun: (input: Int) -> Void) {
-    // content
-}
-
-// Usage
-newMethod(10) { param in
-    println("output: \(param)"")
+@Suite("UserProfileTests")
+struct UserProfileTests {
 }
 ```
 
-- If a closure is the only parameter, you must use trailing closure syntax and avoid the empty parenthesis:
+### Test Structure
 
-> ⚠️ Warning (SwiftLint Standard rule `empty_parentheses_with_trailing_closure`) 
-
-```swift
-// Usage
-newMethod { param in
-    println("output: \(param)"")
-}
-```
-
-- However, if there are 2 closures as the last parameters, do not use trailing closure syntax for the last one as this is ambiguous. Also, when creating a closure inline as a method parameter, put the parameter name on a new line and follow the following indentation rules:
+- Tests are declared inside the test suite `struct`
+- Each test validates one behavior
+- Tests must be small and focused
 
 ```swift
-testMethod(param: 2.5,
-    success: {
-        println("success")
-    },
-    failure: {
-        println("failure")
-    })
-```
+@Suite("UserProfileTests")
+struct UserProfileTests {
 
-- It is not mandatory to declare the closure return type. It can although sometimes be helpul if makes the declaration clearer. If this closure return type is nil and want to specify it, prefer using `Void` than `()`. Also, -> and the return type should be separated by a single space or put on a separate line:
-
-> ⚠️ Warning (SwiftLint Standard rules `void_return`, `redundant_void_return`, `return_arrow_whitespace` and `closure_spacing`) 
-
-```swift
-func takeClosure(aClosure: () -> Void) {
-    // content
-}
-```
-
-- If creating a function or closure with no return type, do not specify one:
-
-```swift
-func noReturn() {
-    // content
-}
-```
-
-- If creating a closure that seems to be large (use your best judgement) do not declare inline; create a local variable.
-
-```swift
-func foo(something: () -> Void) {
-    something()
-}
-
-func doEverything() {
-    let doSomething = {
-        var x = 1
-        for 1...3 {
-            x++
-        }
-        println(x)
-    }
-    foo(doSomething)
-}
-```
-
-Use implicit `return` in one-line closures with clear context.
-
-```swift
-let numbers = [1, 2, 3, 4, 5]
-let even = filter(numbers) { $0 % 2 == 0 }
-```
-
-Also, remember that global functions are closures and sometimes it's convenient to pass a function name as a closure.
-
-```swift
-func isPositive(number: Int) -> Bool
-
-let numbers = [-1, 2, 3, -4, 5]
-let positive = filter(numbers, isPositive)
-```
-
--
-
-### Singleton
-- Implement a singleton by having this at the top of your class definition and a private initializer:
-
-```swift
-class ClassA {
-    static let shared: ClassA = ClassA()
-  
-    private init() {
-        // ...
-}
-```
-
--
-
-### Strings
-- When appending to a string, always use the += operator.
-	
-```swift
-var newString = "Hello"
-newString += " world!"
-```
-
-*Note: do not concatenate user-facing strings as the ordering could change in different languages.*
-
--
-
-### Enums
-
-- When using an enum, always prefer the shorthand syntax when possible. The shorthand syntax should be possible whenever the type does not need to be inferred from the assigned value. Note: there are certain bugs that don't allow them to be used everywhere they should be possible.
-
-```swift
-enum TestEnum {
-    case a
-    case b
-}
-
-var theValue: TestEnum?
-var shouldBeA = true
-
-if shouldBeA {
-    theValue = .a
-} else {
-    theValue = .b
-}
-```
-
-- When declaring and setting a variable/constant of an enum type, do so in the following manner.
-
-```swift
-var testValue: TestEnum = .a
-```
-
-- String enum values can be omitted when they are equal to the enumcase name:
-
-> ⚠️ Warning (SwiftLint Standard rule `redundant_string_enum_value`) 
-
-```swift
-enum Numbers: String {
-    case one = "one" // no need to declare the if equal to enumeration member name
-    case two 
-}
-```
-
--
-
-### Documentation
-
-Use comments to describe why something is written as it is, or working like it does. Remember that code should be self-documenting, so use comments only if necessary.
-
-If you decide to add comments, keep them up-to-date. Unmaintained comments should be removed.
-
-- When documenting a method, use /// if it is only a single line
-
-```swift
-/// This method does nothing
-func foo() {
-    // content
-}
-```
-
-- If you are documenting a method, use /\*\* to begin and */ to end if it is multiline;
-
-```swift
-/**
-This method does something.
-It's very useful.
-*/
-func foo2() {
-    // content
-}
-```
-
-- Use the standard Swift Documentation syntax (reST) in order to enable Quick Documentation. 
-
-Note: Make sure to test your documentation by checking it's Quick Documentation by option-clicking on the method name.
-
-> ⚠️ Warning (SwiftLint Standard rule `valid_docs`) 
-
-```swift
-/**
-This method has parameters and a return type.
-
-:param: input This is an input parameter.
-:returns: True if it worked; false otherwise.
-*/
-func foo3(input: String) -> Bool {
-    // content
-}
-```
-
--
-
-### Custom Types & Type Identifiers
-
-Try to use native Swift types before you come up with your own. Every type can be extended, so sometimes instead of introducing new types, it's convenient to extend or alias existing ones.
-
-- Types should be inferred whenever possible. Don't duplicate type identifier if it can be resolved in compile time:
-
-**Preferred:**
-
-```swift
-let name = "John Appleseed"
-let planets = [.mars, .saturn]
-let colors = ["red": 0xff0000, "green": 0x00ff00]
-```
-
-**Not Preferred:**
-
-```swift
-let name: String = "Amanda Smith"
-let planets: [Planet] = [.venus, .earth]
-let colors: [String: UInt32] = ["blue": 0x0000ff, "white": 0xffffff]
-```
-
-- Omit type parameters where possible
-
-Methods of parameterized types can omit type parameters on the receiving type when they’re identical to the receiver’s. For example:
-	
-**Preferred:**
-    
-```swift
-struct Composite<T> {
-    …
-    func compose(other: Composite) -> Composite {
-        return Composite(self, other)
-    
-}
-```
-
-**Not Preferred:**
-	
-```swift
-struct Composite<T> {
-    …
-    func compose(other: Composite<T>) -> Composite<T> {
-        return Composite<T>(self, other)
+    @Test("Loading a valid user returns a populated profile")
+    func loadingUserReturnsProfile() async throws {
+        let user = try await loadUser()
+        #expect(user.id.isEmpty == false)
     }
 }
 ```
 
-_Rationale:_ Omitting redundant type parameters clarifies the intent, and makes it obvious by contrast when the returned type takes different type parameters.
+### Test Naming
 
--
-
-### Mutability 
-
-It's safer to assume that a variable is immutable, thus it's highly recommended to declare values as constants, using `let`. Immutable constants ensure their values will never change, which results in less error-prone code.
-
-Mutable `var` variables should only be used when necessary, e.g. when you're absolutely sure you will be changing their values in the future.
-
--
-### Optionals
-
-Force unwrapping should be avoided as much as possible. Implicitly unwrapped optionals lead to less safe code and can cause unwanted crashes. Use optional chaining or `if-let` bindings to unwrap optional values.
-
-- When using if-let bindings for unwrapping optionals, rebind the optional to the same name, unless there is a reason not to. 
+- Function names use **lowerCamelCase**
+- Function names describe the behavior under test
+- The `@Test` attribute message provides a human-readable description
 
 ```swift
-func possibleBike() -> Bike? {
-    // content
-}
-
-if let bike = possibleBike() {
-    // content
-}
+@Test("Saving a profile persists the data")
+func savingProfilePersistsData()
 ```
 
 ```swift
-let user: User? = findUserById(123)
+// AVOID
+@Test("Test saving")
+func testSave()
+```
 
-if let user = user {
-    println("found user \(user.name) with id \(user.id)")
+### Assertions
+
+- Use `#expect` for all assertions
+- Assertions must be explicit and readable
+- Avoid combining multiple conditions in one assertion
+
+```swift
+#expect(count == 3)
+```
+
+```swift
+// AVOID
+#expect(count == 3 && items.isEmpty == false)
+```
+
+### Async Tests
+
+- Async behavior is tested using `async` test functions
+- Do not block threads or use sleeps
+- Await real suspension points
+
+```swift
+@Test("Fetching data returns a non-empty result")
+func fetchDataReturnsResult() async throws {
+    let data = try await fetchData()
+    #expect(data.isEmpty == false)
 }
 ```
 
-Unwrapping several optionals in nested `if-let` statements is forbidden, as it leads to "pyramid of doom". Swift allows you to unwrap multiple optionals in one statement. If needed, you can add a line break for each optional you unwrap. 
+### Error Testing
 
-> ⚠️ Warning (SwiftLint Standard rule `nesting`) 
-
-```swift
-let name: String?
-let age: Int?
-
-if let name = name, let age = age, age >= 13 {
-    /* ... */
-}
-```
-
-Implicitly unwrapped optionals can also sometimes be useful. They may be used in unit tests or directly in the app implementation, where the current item should never be `nil`. There is no point executing the rest of the tests if any one of them fails, and it will provide with a sudden and unmissable feedback raising an implementation error when used in app directly. 
+- Error cases must be tested explicitly
+- Prefer matching specific error cases
 
 ```swift
-var sut: SystemUnderTest!
-
-beforeEach {
-    sut = /* ... */
-}
-
-afterEach {
-    sut = nil
-}
-
-it("should behave as expected") {
-    sut.run()
-    expect(sut.running).to(beTrue())
-}
-```
-
--
-
-### Static code vs Dynamic code
-
-Static code is code where logic and control can be resolved at compile-time. The Swift compiler is able to optimize predictable code to work better and faster. Try to make use of this feature and write as much static code as possible.
-
-On the other hand, dynamic code's control flow is resolved at run-time, which means it's not predictable and, as a result, can't be optimized by the compiler. Avoid using `dynamic` and `@objc` attributes.
-
--
-
-### Classes and Inheritance
-
-- Classes should start as `final`, and only be changed to allow subclassing if a valid need for inheritance has been identified. Even in that case, as many definitions as possible _within_ the class should be `final` as well, following the same rules.
-
-_Rationale:_ Composition is usually preferable to inheritance, and opting _in_ to inheritance hopefully means that more thought will be put into the decision.
-
-- Some overridden methods should always call super. Similarly, some other methods should never call super. 
-
-> **Note**: the SwiftLint rule only checks for specific and often used overrides, it is not a general rule in either cases. Exceptions and custom methods can be added.
-
-> ⚠️ Warning (SwiftLint Standard rules `overridden_super_call` and `overridden_super_call`) 
-
-**Preferred:**
-
-```swift
-override func viewDidLoad() {
-   super.viewDidLoad()
-   // code
-}
-
-override func loadView() {
-   // code
-}
-```
-
-**Not Preferred:**
-    
-```swift
-override func viewDidLoad() {
-   // code
-}
-
-override func loadView() {
-    super.loadView()
-   // code
-}
-```
-
-## Code organization
-
-### Project Code Organization
-
-- The filesystem directories should be kept in sync with the Xcode file groups.
-
-- Files within groups may be kept alphabetized (case-insensitively, with groups before files).
-
-- An Xcode project repository should follow this structure:
-    *   base folder (contains Gemfile, Podfile, lock files, .rvmrc, other non-Xcode configuration files as necessary)
-        *   `ProjectName/`
-        *   `ProjectName.xcodeproj/`
-        *   `ProjectName.xcodeworkspace/` (if using CocoaPods)
-        *   `ProjectNameTests/`
-        *   `Pods/` (if using CocoaPods)
-
-- There should be no files directly within an Xcode ProjectName directory. The subfolders (and corresponding groups) should follow this structure according to the project design pattern:
-    
-    #####MVC (Model-View-Controller):
-    *   `Controllers/` (contains view controllers within a folder structure that mirrors the app navigation)
-    *   `Views/` (contains `.xib`s, and UI subclasses within a folder structure that mirrors the app navigation)
-    *   `Storyboards/` (contains storyboard files)
-
-    #####MVVM (Model-View-ViewModel):
-    *   `UI/`
-        *   `FlowName/` (as many folders as flows in the application, they contain view controllers, view models and the storyboard file for the corresponding flow)
-
-    #####All:
-    *   `Helpers/` (contains utility classes, extensions and singletons)
-    *   `Networking/` (contains networking service and other API integration related classes)
-    *   `Models/`
-        *   `ProjectName.xcdatamodeld`
-        *   `Editable/` (Core-data Entity Categories)
-        *   `Generated/` (Core-Data Generated Entity files, which should not be edited)
-    *   `Resources/`
-        *   `Fonts/`
-        *   `Images/` (contains some sort of internal folder structure and uses sane naming conventions and contains Images.xcassets)
-        *   `Strings/` (contains plists for localized strings)
-    *   `Base.lproj/` (if using localized strings)
-    *   `Supporting Files/` (AppDelegate, InfoPlist, ProjectName-Info.plist, ProjectName-Prefix.pch, bridging-headers)
-
-
-Such organization helps others to reach important content earlier. It also saves time, confusion and improves readability.
-
-- Files should be clear and easy to read, and always look to strike a balance that promotes natural visual groupings. While we intentionally limit the number of empty line breaks to one, _where and how_ those are placed are at the discretion of the author. Some prefer a more "compact" approach where line breaks are inserted rather sparingly, where others sometimes prefer a more "airy" approach where line breaks are used a bit more liberally. Regardless of your preference, it's good practice to keep the approach consistent within a project.
-
-> 🚫 >= 2 consecutive line breaks (SwiftLint Custom rule `consecutive_new_lines`)
-
-**Compact Code:**
-
-```swift
-class Polygon { 
-    let numberOfSides: Int
-
-    init() {
-        super.init(numberOfSides: 3)
-        self.doSomething()
-        self.numberOfSides = 5
+@Test("Loading without network throws offline error")
+func loadingWithoutNetworkThrowsOfflineError() async {
+    await #expect(throws: NetworkError.offline) {
+        try await loadUser()
     }
 }
 ```
 
-**Airy Code:**
-    
-```swift
-class Polygon {
+### Test Isolation
 
-    let numberOfSides: Int
+- Tests must be independent
+- No shared mutable state between tests
+- Tests must be order-independent
 
-    init() {
 
-        super.init(numberOfSides: 3)
-        self.doSomething()
-        self.numberOfSides = 5    
+### What Tests Must Not Do
 
-    }
+- Depend on execution order
+- Rely on global mutable state
+- Use sleeps or timing assumptions
+- Test multiple unrelated behaviors
 
-}
-```
 
-### File Code Organization
+## Performance
 
- The following section refers to marks, which are Swift's version of `#pragma mark` in Objective-C to separate code. There are 2 types of marks:
- 
- - Section Marks: `// MARK: - Section Name`
- - Sub-section Marks:`// MARK: Sub-section Name`
+Performance rules focus on **Swift language and runtime behavior**.  
+They do not define application-level optimization strategies.
 
- Use marks to indicate new sections in code. Separate the mark comment with a new line.
+Performance considerations must never compromise **correctness, safety, or readability** without measurement.
 
-```swift
-class Stuff {
-    // MARK: - Instance methods
+---
 
-    func newMethod() {
-        // content
-    }
-}
-```
+### General Principles
 
-The class/struct file layout should be ordered as follows with respect to marks and code organization (Note: See naming convention specified in above note):
+- Do not optimize without evidence
+- Measure before and after any optimization
+- Prefer clear code unless performance impact is proven
+- Optimize locally and document the reason
 
-        - Section: Singleton
-        - Section: Declared Types (Enums, Structs, etc.), Type Aliases
-        - Section: Constants
-        - Section: Class Properties
-        - Section: Instance Properties
-            - Sub-section: Stored
-            - Sub-section: Computed
-        - Section: Init/Deinit
-        - Section: Class Methods
-            - Sub-section: Public
-            - Sub-section: Private
-        - Section: Instance Methods
-            - Sub-section: Public
-            - Sub-section: Private
-        - Section: Protocols
-            - Sub-section: <Protocol Name>
+Premature optimization is forbidden.
 
-- When a class implements a protocol, an extension should be created at the bottom of the file  that declares the protocol conformance and implements the protocol. One extension per protocol. Thus Source files will look like this: 
+### Value vs Reference Semantics
 
-> ⚠️ Warning (SwiftLint Custom rule `protocol_conformance`) 
+- Prefer value types (`struct`, `enum`)
+- Be aware of copying costs
+- Understand copy-on-write behavior
 
 ```swift
-import MoneyKit
-
-// Mark: - Currency
-enum Currency {
-    //content
-}
-
-// Mark: - Printabilty
-protocol Printabilty {
-    var description:String { get }
-    func reqMethod()
-}
-
-// MARK: - Wallet
-
-class Wallet {
-    // MARK: - Properties
-
-    // MARK: Public Properties
-
-    let cards: [Card]
-    private(set) var cash: Cash
-    
-    // MARK: Private Properties
-    
-    unowned private let owner: Person
-    
-    // MARK: - Methods
-
-    // MARK: Initializer Methods
-
-    init(cash: Cash, cards: [Card], owner: Person)
-    
-    // MARK: Public Methods
-    
-    public func affordsTransaction(transaction: Transaction) -> Bool
-    
-    // MARK: InternalMethods Methods
-
-    func calculateTransactionWithCard(card: Card) -> Transaction
-    
-    // MARK: Private Methods
-
-    private func cardWithSuffiecientCash(cash: Cash) -> Card?
-}
-
-// MARK: - Protocol Implementation/Extensions
-// MARK: Printable
-
-extension Wallet: Printabilty {
-    var description: String {
-        return "\(owner.name) has \(cash) cash and \(cards.count) cards"
-    }
-
-    func reqMethod() {
-        //something
-    }
+struct Configuration {
+    let timeout: TimeInterval
 }
 ```
 
-### Functions Code Organization
+Value types are cheap until mutated.
+Avoid unnecessary mutation of large value types.
 
-- Endless files are usually a sign of poor respect of single responsibility principle and design. 
+### Copy-on-Write Awareness
 
-> ⚠️ > 1000 lines (SwiftLint Standard rule `file_length`)
-
-- Similarly, each function shouldn't count more than 150 lines at the risk of raising a warning. Error if over 300 lines.
-
-> ⚠️ > 150 lines, 🚫 > 300 lines (SwiftLint Standard rule `function_body_length`)
-
-## Value Types vs Reference Types
-
-Value types, such as structs, enums and tuples are usually simpler than reference types (classes) and they're always passed by copying. This means they're independent thread-safe instances, which makes code simpler and safer. In addition, `let` and `var` work as expected.
-
-Value types are great for representing **data** in the app.
+- Copy-on-write collections are efficient when not mutated
+- Mutating shared values may trigger full copies
 
 ```swift
-struct Country {
-    let name: String
-    let capital: City
+var values = largeArray
+values.append(1) // may trigger a copy
+```
+
+Avoid mutating shared large collections in hot paths.
+
+### Allocation Awareness
+
+- Avoid unnecessary object creation
+- Prefer reuse when safe and meaningful
+- Be mindful of temporary allocations in tight loops
+
+```swift
+// AVOID
+for _ in 0..<1000 {
+    let formatter = DateFormatter()
 }
 ```
 
-On the other hand, reference types, such as classes, are passed by referencing the same mutable instance in memory. There are several cases when classes should be preferred. The first case emerges when subclassing current Objective-C classes. The second one is when you need to use reference types with mutable state, or if you need to perform some actions on deinitialization.
-
-Reference types are great to represent **behavior** in the app.
-	
 ```swift
-class FileStream {
-    let file: File
-    var currentPosition: StreamPosition
+// GOOD
+let formatter = DateFormatter()
+for _ in 0..<1000 {
 }
 ```
 
-Keep in mind that inheritance is not a sufficient argument to use classes. You should try to compose your types using protocols.
+### `final` Usage
 
-**Preferred:**
+- Mark classes as `final` unless subclassing is required
+- `final` enables better compiler optimizations
 
 ```swift
-protocol Polygon {
-    var numberOfSides: Int { get }
-}
-
-struct Triangle: Polygon {
-    let numberOfSides = 3
+final class ImageLoader {
 }
 ```
 
-**Not Preferred:**
-	
-```swift
-class Polygon {
-    let numberOfSides: Int
-    init(numberOfSides: Int)
-}
+### `lazy` Properties
 
-class Triangle: Polygon {
-    init() {
-        super.init(numberOfSides: 3)
-    }
-}
+- Use `lazy` for expensive initialization
+- Do not use `lazy` to hide architectural problems
+
+```swift
+lazy var formatter = DateFormatter()
 ```
 
-## Cocoa Specific Guides
+### Inlining and Visibility
 
-### Protocols
+- Avoid @inlinable unless you understand its impact
+- Do not expose implementation details for performance
+- Let the compiler optimize by default
 
-- The ReusableView Protocol should be used by any view used by a UICollectionViewCell or UITableViewCell that needs a reuse identifier.
+Manual inlining is rarely necessary.
 
-```swift
-protocol ReusableCell {
-    static var reuseIdentifier: String { get }
-    static var nibName: String { get }
-}
-```
 
-- Delegates must be declared weak in order to avoid reference cycles:
+### Async Performance
 
-> ⚠️ Warning (SwiftLint Standard rule `weak_delegate`) 
+- Avoid unnecessary task creation
+- Prefer structured concurrency
+- Be mindful of actor contention
 
 ```swift
-weak var delegate: OneDelegate?
-```
-
-#### UITableViewCell & UICollectionViewCell
-
-In a UITableViewCell/UICollectionViewCell subclass, create a read-only computed property for the reuse identifier for the cell. **Note**: Please use the protocol listed above for conformance.
-
-```swift
-extension TableViewCell: ReusableCell {
-    static let reuseIdentifier: String = "TableViewCellIdentifier"
-    static let nibName: String = "CustomTableViewCell"
+// AVOID If not needed
+Task {
+    await doWork()
 }
 ```
 
-> **Reasoning**: When registering cells for reuse in a UITableView or UICollectionView, you need the nib name to load the nib and the reuse identifier.
+Create tasks only at defined concurrency boundaries.
 
--
 
-### NSNotification
-Name notifications in reverse domain format with the notification name in Capitalized Camel Case.
+### Performance Documentation
+
+- Document non-obvious performance decisions
+- Include reasoning and measurement context
 
 ```swift
-com.linkedin.slideshare.NotificationName
+// Performance note:
+// This cache avoids repeated JSON decoding in hot paths.
 ```
 
-Extend `Notification.Name` to declare all notification names as constants.
+## Anti-Patterns
+
+This section lists **forbidden or strongly discouraged patterns** that lead to fragile, unsafe, or unmaintainable Swift code.
+
+Anti-patterns are violations of intent, not personal style differences.
+
+---
+
+### Force Unwrapping (`!`)
+
+- Force unwrapping is forbidden
+- All optional values must be handled explicitly
 
 ```swift
-extension Notification.Name {
-    static let abc = Notification.Name("com.linkedin.slideshare.abc")
+// FORBIDDEN
+let token = token!
+```
+
+Use `guard`, `if let`, or redesign the API.
+
+
+### Force Casting (`as!`)
+
+- Force casting is forbidden
+- Use safe casting with `as?` or redesign types
+
+```swift
+// FORBIDDEN
+let view = object as! UIView
+```
+
+### Implicitly Unwrapped Optionals
+
+- Implicitly unwrapped optionals are forbidden
+- SwiftUI does not require them
+
+```swift
+// FORBIDDEN
+var value: String!
+```
+
+### Shared Mutable State
+
+- Shared mutable state outside of actors is forbidden
+- Global mutable state is forbidden
+
+```swift
+// FORBIDDEN
+var cache: [String: Any] = [:]
+```
+
+### Overuse of `Any`
+
+- Avoid `Any` and `AnyObject` if possible
+- Use strongly typed models instead
+
+### Massive Types
+
+- Types with too many responsibilities are forbidden
+- Large types must be split or refactored
+
+Indicators of massive types:
+- Hundreds of lines
+- Many unrelated methods
+- High cognitive load
+
+### Silent Failure
+
+- Swallowing errors is forbidden
+- Ignoring return values that indicate failure is forbidden
+
+```swift
+// FORBIDDEN
+do {
+    try perform()
+} catch {
 }
 ```
 
-Create notification handlers as lazy closures.
+### Magic Numbers and Strings
+
+- Avoid hard-coded literals with unclear meaning
+- Use named constants
 
 ```swift
-private lazy var handleNotificationAbc: (NSNotification!) -> Void { [weak self] notification in
-    // Handle the notification
-}
-```
-	
-> **Reasoning**: This way you can define capture semantics for self and also use the identifier as the selector in the addObserver method (see below) instead of a string. This gives you the safety of the compiler.
-	
-Create a registerNotifications() method and deregisterNotifications().
-	
-```swift
-func registerNotifications() {
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-
-    notificationCenter.addObserver(self, selector: handleNotificationABC, name: .abc, object: nil)
-}
-
-func deregisterNotifications() {
-    NSNotificationCenter.defaultCenter().removeObserver(self)
+// FORBIDDEN
+if retries > 3 {
 }
 ```
 
--
-
-### View Controllers
-If the view controller is associated with a Storyboard, create a class method named createInstance to return an initialized instance of the view controller from the Storyboard.
-
 ```swift
-static func createInstance() -> MasterViewController {
-    return UIStoryboard.initialControllerFromStoryboard("Master") as! MasterViewController
-}
-```
-> **Reasoning**: Use static if you are not going to make a subclass of this class. If you are going to make a subclass, change it to class func.
-
-If you have the situation described above, but have properties that need to be initialized, also create helper methods following the designated/convenience initializer type pattern like so.
-
-```swift
-static func createInstanceWithId(id: Int) -> MasterViewController {
-        let masterViewController = createInstance()
-        masterViewController.id = id
-        return masterViewController
+// GOOD
+if retries > maxRetryCount {
 }
 ```
 
--
+### Premature Optimization
 
-### UIView
-If you have a class that inherits from UIView and has a XIB file where it is layed out, create a class method named createInstance similar to the example in the View Controllers section.
-
-```swift
-class CustomView: UIView {
-    private static let nibName: String = "CustomView"
-
-    static func createInstance() -> CustomView {
-        return NSBundle.mainBundle().loadNibNamed(nibName, owner: nil, options: nil)[0] as! CustomView
-    }
-}
-```
-
--
-
-### Core Foundation
-When using Core Graphics structs, such as CGRect, use the initializers instead of the older CGRectMake method.
+- Optimizing without measurement is forbidden
+- Performance changes must be justified
 
 ```swift
-var rect = CGRect(x: 10.0, y: 10.0, width: 45.0, height: 300.0)
+// FORBIDDEN
+var buffer = UnsafeMutablePointer<Int>.allocate(capacity: 1024)
 ```
 
-If you need to make an instance of a struct zeroed out, utilize the class constant.
+### Excessive Comments
+
+- Comments that explain what the code does are discouraged
+- Code should be self-explanatory
 
 ```swift
-var zeroRect: CGRect = .zero
+// AVOID
+// Increment i by one
+i += 1
 ```
-
--
-
-### User Facing Strings
-Put any user-facing string in the Localizable.strings file with a key in upper camel case. Use NSLocalizedString when accessing the strings in code.
-
-```swift
-// Localizable.strings //
-// <App Section>
-"UserFacingStringKey" = "This is a user-facing string."
-
-// Someting.swift //
-var userFacing = NSLocalizedString("UserFacingStringKey", comment: "")
-
-```
-
--
-
-### Objective-C Interoperability
-You must have a single Objective-C bridging header for Object-C interoperability. However, if a certain set of code you are importing has multiple header files; group them into another header file.
-
-```objc
-// <Product-Name>-Bridging-Header.h
-#import "SDWebImageHeader.h"
-
-// SDWebImageHeader.h
-#import <SDWebImage/UIImageView+WebCache.h>
-#import <SDWebImage/UIImage+MultiFormat.h>
-#import <SDWebImage/SDWebImagePrefetcher.h>
-```
-
--
-
-# Others
-
-- Rewriting standard library functionalities should never take place (for e.g: Method Swizzling). Your code will most probably be less optimized and more confusing to other developers.
-
-- Semicolons are obfuscative and should never be used. Statements can be distributed in different lines.
-
-> ⚠️ Warning (SwiftLint Standard rule `trailing_semicolon`) 
-
-- It is recommended to use `TODO`, `FIXME` or `HACK` comment statements to intentionally generate a warning, as a reminder of specific lines/blocks of code that need to be addressed before the code is release-ready.
-
-> ⚠️ Warning (SwiftLint Standard rule `todo`) 
